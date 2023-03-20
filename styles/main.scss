@@ -1,0 +1,25 @@
+.block-auth {
+  .auth-popup {
+    width: 100%;
+    max-width: 312px;
+    border-radius: 8px;
+    background-color: #fff;
+    padding: 16px 16px 56px;
+
+    .auth-button {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-top: 10px;
+      background-color: #ffe400;
+      height: 50px;
+      box-shadow: 0 4px 8px rgba(255, 228, 0, 0.2);
+      border-radius: 8px;
+      width: 100%;
+    }
+  }
+}
+
+.font-size-15 {
+  font-size: 15px;
+}

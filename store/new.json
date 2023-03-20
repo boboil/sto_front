@@ -1,0 +1,190 @@
+[
+{
+"Products": [],
+"Works": [
+{
+"ID": 1155,
+"Code": "2024",
+"Group": "Выполнено",
+"Name": "Діагностика підвіски",
+"Description": "",
+"Notes": null,
+"StdHour": 0.5,
+"Quantity": 1,
+"Price": 400,
+"Total": 200,
+"WorkerName": "Аракелян Генрік Грачійович"
+},
+{
+"ID": 1555,
+"Code": "22294",
+"Group": "Наряд-заказ",
+"Name": "\"Выполнил Исполнитель",
+"Description": null,
+"Notes": null,
+"StdHour": 0.5,
+"Quantity": 1,
+"Price": 0,
+"Total": 0,
+"WorkerName": "Аракелян Генрік Грачійович"
+},
+{
+"ID": 1967,
+"Code": "22630",
+"Group": "Наряд-заказ",
+"Name": "\"Причина звернення",
+"Description": null,
+"Notes": null,
+"StdHour": 0.01,
+"Quantity": 1,
+"Price": 0,
+"Total": 0,
+"WorkerName": "Аракелян Генрік Грачійович"
+},
+{
+"ID": 2242,
+"Code": "22871",
+"Group": "Выполнено",
+"Name": "Діагностика пристроєм ендоскоп>",
+"Description": "",
+"Notes": null,
+"StdHour": 1,
+"Quantity": 1,
+"Price": 600,
+"Total": 600,
+"WorkerName": "Остапенко Олександр 066 205 03 03"
+},
+{
+"ID": 1767,
+"Code": "32203",
+"Group": "Комментарий",
+"Name": "\"Рекомендації МЕХАНІКА",
+"Description": null,
+"Notes": "Замінити ланцюг двигуна, прикіпання першого циліндра, задіри в циліндрах",
+"StdHour": 0.01,
+"Quantity": 1,
+"Price": 0,
+"Total": 0,
+"WorkerName": "Аракелян Генрік Грачійович"
+}
+],
+"RecType": 4,
+"ID": 36003,
+"No": "W185549",
+"Date": "2023-02-27T00:00:00",
+"StatusCode": "F",
+"DocCode": "A",
+"Notes": "Онлайн, Audi a4, 2014 1.8 tfsi   \r\n\r\n",
+"Delivery": null,
+"DocBasis": null,
+"CarName": " Інше авто . ",
+"CarOdometer": "136000",
+"WorkNotes": {
+"Reason": "Є проблема потрібно подивитись коментар: Потрібно зробити діагности авто яке я збираюсь купити, ауді а4 2014, 1.8 tfsi, можливо на 13 не встигну приїду о 13:30",
+"Failure": null,
+"Completenes": null,
+"WorkNote": null
+},
+"IsPaid": null,
+"Payment": 800,
+"Total": 800,
+"Currency": "UAH",
+"ProductAmount": {
+"Amount": 0,
+"Delivery": 0,
+"Discount": 0,
+"Payment": 0,
+"Total": 0,
+"Currency": "UAH"
+},
+"WorkAmount": {
+"Amount": 800,
+"Delivery": 0,
+"Discount": 0,
+"Payment": 800,
+"Total": 800,
+"Currency": "UAH"
+}
+},
+{
+"Products": [],
+"Works": [
+{
+"ID": 1152,
+"Code": "2021",
+"Group": "Выполнено",
+"Name": "Датчик тиску палива (заміна)",
+"Description": "",
+"Notes": "тест",
+"StdHour": 0.5,
+"Quantity": 1,
+"Price": 480,
+"Total": 240,
+"WorkerName": null
+},
+{
+"ID": 1555,
+"Code": "22294",
+"Group": "Наряд-заказ",
+"Name": "\"Выполнил Исполнитель",
+"Description": null,
+"Notes": null,
+"StdHour": 0.01,
+"Quantity": 1,
+"Price": 0,
+"Total": 0,
+"WorkerName": null
+},
+{
+"ID": 1967,
+"Code": "22630",
+"Group": "Наряд-заказ",
+"Name": "\"Причина звернення",
+"Description": null,
+"Notes": null,
+"StdHour": 0.01,
+"Quantity": 1,
+"Price": 0,
+"Total": 0,
+"WorkerName": null
+}
+],
+"RecType": 4,
+"ID": 36081,
+"No": "W185615",
+"Date": "2023-03-06T00:00:00",
+"StatusCode": "A",
+"DocCode": "A",
+"Notes": "тест",
+"Delivery": null,
+"DocBasis": null,
+"CarName": "BM5054BX VOLKSWAGEN Golf 6 2010",
+"CarOdometer": "111111",
+"WorkNotes": {
+"Reason": null,
+"Failure": null,
+"Completenes": null,
+"WorkNote": null
+},
+"IsPaid": null,
+"Payment": 0,
+"Total": 240,
+"Currency": "UAH",
+"ProductAmount": {
+"Amount": 0,
+"Delivery": 0,
+"Discount": 0,
+"Payment": 0,
+"Total": 0,
+"Currency": "UAH"
+},
+"WorkAmount": {
+"Amount": 240,
+"Delivery": 0,
+"Discount": 0,
+"Payment": 0,
+"Total": 240,
+"Currency": "UAH"
+}
+}
+]

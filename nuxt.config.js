@@ -18,10 +18,15 @@ export default {
 
   // Global CSS: https://go.nuxtjs.dev/config-css
   css: [
+    '@/styles/main.scss',
+    '@/styles/custom.css',
+    '@/styles/styles.css'
   ],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
+    { src: '~/plugins/vuex-cache.js', mode: 'client' },
+    { src: '~/plugins/axios.js', mode: 'client' }
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -30,14 +35,83 @@ export default {
   // Modules for dev and build (recommended): https://go.nuxtjs.dev/config-modules
   buildModules: [
   ],
-
+  /*
+   ** Environment variables
+   */
+  env: {
+    grantType: 'password',
+    grantTypeRefreshToken: 'refresh_token',
+    appHost: process.env.CLIENT_URI,
+    apiHost: process.env.API_ENDPOINT
+  },
+  /*
+   ** Customize the progress-bar color
+   */
+  loading: {
+    color: '#ffe400',
+    height: '2px'
+  },
+  /*
+   ** Auth settings
+   */
+  auth: {
+    strategies: {
+      local: {
+        scheme: '@/schemes/localScheme',
+        endpoints: {
+          login: {
+            url: process.env.AUTH_ENDPOINT,
+            method: 'post',
+            propertyName: 'access_token'
+          },
+          logout: false,
+          user: { url: '/csws/cs/user', method: 'get', property: 'Phone' },
+          autoFetchUser: false
+        },
+        tokenRequired: true,
+        token: {
+          property: 'access_token',
+          type: 'Bearer',
+          name: 'Authorization',
+        },
+      },
+    },
+    redirect: {
+      logout: '/',
+      user: '/user/profile',
+      callback: '/'
+    },
+    autoFetchUser: false,
+    localStorage: true,
+    watchLoggedIn: false
+  },
   // Modules: https://go.nuxtjs.dev/config-modules
   modules: [
     // https://go.nuxtjs.dev/bootstrap
     'bootstrap-vue/nuxt',
+    '@nuxtjs/axios',
+    '@nuxtjs/auth-next',
+    '@nuxtjs/proxy'
   ],
+  proxy: {
+    '/csws': {
+      target: 'http://95.217.38.198/csws',
+      changeOrigin: true,
+      pathRewrite: { '^/csws': '/' },
+      headers: {
+        'Access-Control-Allow-Origin': 'http://localhost:3000'
+      }
+    },
+  },
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
+    extend(config, ctx) {},
+    transpile: [
+      'defu'
+    ]
+  },
+  server: {
+    host: '0.0.0.0' // default: localhost
   }
 }
