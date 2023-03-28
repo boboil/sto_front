@@ -7,7 +7,11 @@
           <div class="auth-popup-title">
             {{ $auth.user.fullName }}
           </div>
-          <button class="nav-btn" type="button" data-toggle="modal" data-target="#diagnosticModal">
+          <button
+            class="nav-btn"
+            type="button"
+            @click="diagnosticModalShow = !diagnosticModalShow"
+          >
             <b>Записатись</b>
           </button>
           <NuxtLink
@@ -60,9 +64,12 @@
           </div>
         </div>
       </section>
-      <div id="example">
-
-      </div>
+      <ModalPopup :is-open.sync="diagnosticModalShow" title="Онлайн запис!">
+        <DiagnosticForm
+          slot-scope="data"
+          v-bind="data"
+        />
+      </ModalPopup>
     </div>
   </div>
 </template>
@@ -70,18 +77,23 @@
 <script>
 import {mapGetters} from 'vuex'
 import {USER_ROUTES} from '~/constants'
-import Header from "~/components/Common/Layout/Header.vue";
+import Header from "@/components/Common/Layout/Header";
+import ModalPopup from "@/components/ModalPopup";
+import DiagnosticForm from "@/components/Diagnostic/DiagnosticForm";
 
 export default {
   name: "index",
-  components: {Header},
+  components: {Header, ModalPopup, DiagnosticForm},
   data() {
     return {
-      acts: []
+      acts: [],
+      diagnosticModalShow: false
     }
   },
-  async fetch({store, params, route, $auth}) {
+  async asyncData({ store }) {
+    await store.dispatch('user/fetchUser')
     await store.dispatch('user/fetchHistoryList')
+    await store.dispatch('user/fetchCars')
   },
   computed: {
     USER_ROUTES() {

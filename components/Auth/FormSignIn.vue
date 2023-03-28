@@ -68,34 +68,36 @@ export default {
             headers: {
               'Content-Type': 'application/x-www-form-urlencoded',
               'Accept-Language': 'ru-RU,ru;q=0.8,en-US;q=0.5,en;q=0.3',
-              'Access-Control-Allow-Origin': 'http://95.217.38.198',
               // 'Origin': 'http://95.217.38.198',
               Accept: '*/*'
             },
             data: {
               username: this.fields.username,
-              password: this.fields.password
+              password: this.fields.password,
+              grant_type: 'password'
             },
             transformRequest(data, headers) {
-              Object.assign(data, {
-                grant_type: process.env.grantType
-              })
-
-              return Object.entries(data)
-                .reduce((result, param) => [...result, param.join('=')], [])
-                .join('&')
+              const queryParams = new URLSearchParams();
+              for (const key in data) {
+                if (data.hasOwnProperty(key)) {
+                  queryParams.append(key, data[key]);
+                }
+              }
+              return queryParams.toString();
             }
-          }).then((response) => {
-            const token = response.data.access_token
-            this.$store.commit('setToken', token)
-            this.$auth.setUser('user')
           })
+        const data = await response.data
+        if (data && data.access_token) {
+          console.log('Token before setting in localStorage:', data.access_token);
+          this.$auth.ctx.$axios.setHeader(this.$auth.options.token.name, data.access_token);
+          this.$auth.setToken('local', data.access_token)
+        } else {
+          console.error('Data object or access_token is not available');
+        }
+        await this.$store.dispatch('user/fetchUser')
         await this.$router.push(USER_ROUTES.USER_PROFILE.path)
       } catch (e) {
-        // eslint-disable-next-line
-        const {error, error_description} = e.response.data
-        // eslint-disable-next-line no-console
-        console.log('ERROR', error_description)
+        // ...
       } finally {
         this.locked = false
       }

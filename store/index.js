@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import user from './user'
+import time from './time'
 import {cacheAction} from 'vuex-cache'
 import storeListener from '@/plugins/storeListener'
 import { AUTH_ROUTES } from '@/constants'
@@ -34,7 +35,7 @@ export const mutations = {
   setToken(state, token) {
     state.auth.token = token
     state.auth.loggedIn = true
-  },
+  }
 }
 
 export const actions = {
@@ -82,6 +83,7 @@ export const actions = {
 export const plugins = [storeListener]
 
 export const modules = {
-  user
+  user,
+  time
 }
 export const strict = false
