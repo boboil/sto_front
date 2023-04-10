@@ -60,7 +60,7 @@ import Header from "~/components/Common/Layout/Header";
 import {mapGetters} from "vuex";
 
 export default {
-  name: "Talons",
+  name: "Recommendations",
   components: {Header},
   async fetch({store, params, route, $auth}) {
     await Promise.all([

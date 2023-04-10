@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import user from './user'
 import time from './time'
+import cart from './cart'
 import {cacheAction} from 'vuex-cache'
 import storeListener from '@/plugins/storeListener'
 import { AUTH_ROUTES } from '@/constants'
@@ -84,6 +85,7 @@ export const plugins = [storeListener]
 
 export const modules = {
   user,
-  time
+  time,
+  cart
 }
 export const strict = false
