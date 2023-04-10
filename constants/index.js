@@ -26,7 +26,7 @@ export const USER_ROUTES = {
   },
   USER_ALL_JOBS: {
     path: '/user/all-jobs',
-    name: 'allJobs',
+    name: 'all-jobs',
     pageTitle: 'Всі роботи',
   },
   USER_ACTS: {

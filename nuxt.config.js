@@ -19,14 +19,15 @@ export default {
   // Global CSS: https://go.nuxtjs.dev/config-css
   css: [
     '@/styles/main.scss',
-    '@/styles/custom.css',
-    '@/styles/styles.css'
+    '@/styles/styles.css',
+    '@/styles/custom.css'
   ],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
     { src: '~/plugins/vuex-cache.js', mode: 'client' },
-    { src: '~/plugins/axios.js', mode: 'client' }
+    { src: '~/plugins/axios.js', mode: 'client' },
+    { src: '~/plugins/moment.js', mode: 'client' }
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -62,10 +63,10 @@ export default {
           login: {
             url: process.env.AUTH_ENDPOINT,
             method: 'post',
-            propertyName: 'access_token'
+            propertyName: 'access_token',
           },
           logout: false,
-          user: { url: '/csws/cs/user', method: 'get', property: 'Phone' },
+          user: { url: '/csws/cs/user', method: 'get', property: false },
           autoFetchUser: false
         },
         tokenRequired: true,
@@ -73,6 +74,8 @@ export default {
           property: 'access_token',
           type: 'Bearer',
           name: 'Authorization',
+          storage: 'localStorage',
+          maxAge: 1800,
         },
       },
     },
@@ -90,7 +93,7 @@ export default {
     // https://go.nuxtjs.dev/bootstrap
     'bootstrap-vue/nuxt',
     '@nuxtjs/axios',
-    '@nuxtjs/auth-next',
+    '@nuxtjs/auth',
     '@nuxtjs/proxy'
   ],
   proxy: {

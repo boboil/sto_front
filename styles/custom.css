@@ -595,6 +595,10 @@ main#all_works {
     background-color: #d8e2d8 !important;
 }
 
+.red {
+  color: red;
+}
+
 .logo {
     max-width: 100px;
 }

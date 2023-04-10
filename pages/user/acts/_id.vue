@@ -116,7 +116,7 @@
 
 
           <div class="act-category" v-if="defectations.length">
-            <div class="act-category-title" style="color:red;">
+            <div class="act-category-title red">
               Дефектовано
             </div>
             <div class="act-category-content">
@@ -133,7 +133,7 @@
                 <tr v-for="recommendation in defectations">
                   <td>
                     {{ recommendation.Name }}
-                    <span v-if="recommendation.Notes.length">
+                    <span v-if="recommendation.Notes && recommendation.Notes.length">
                       <br>Примітка:
                     <small>{{ recommendation.Notes }}</small>
                     </span>
@@ -145,7 +145,7 @@
           </div>
 
           <div class="act-category" v-if="recommendations.length">
-            <div class="act-category-title" style="color:#0014ff;">
+            <div class="act-category-title blue">
               Ось що ще хотілось додати:
             </div>
             <div class="act-category-content">
@@ -188,8 +188,8 @@ import {USER_ROUTES} from "@/constants";
 export default {
   name: "ActDetail",
   components: {Header},
-  async fetch({store, params, route, $auth}) {
-    store.dispatch('user/fetchActDetail', params)
+  async asyncData({ store, params }) {
+    await store.dispatch('user/fetchActDetail', params);
   },
   data() {
     return {
@@ -209,31 +209,21 @@ export default {
       cars: 'user/getCars'
     }),
     total() {
-      const totalWork = this.act['WorkAmount']['Total']
-      const totalProduct = this.act['ProductAmount']['Total']
-      if (!totalWork || !totalProduct) {
-        return 0
-      }
+      const totalWork = this.act['WorkAmount']['Total'] ?? 0
+      const totalProduct = this.act['ProductAmount']['Total'] ?? 0
       return totalWork + totalProduct
     },
     clientReasons() {
-      const works = [];
-      this.act.Works.forEach((item) => {
-        if (item.ID === 1967) {
-          item.Notes += '<br/>' + this.act.WorkNotes.Reason;
-          works.push(item);
-        }
-      })
-      return works
+      return this.act.Works.filter(item => item.ID === 1967)
+        .map(item => ({
+          ...item,
+          Notes: item.Notes + '<br/>' + this.act.WorkNotes.Reason,
+        }));
     },
     works() {
-      const works = [];
-      this.act.Works.forEach((item) => {
-        if (item.Group === 'Выполнено' && item.WorkerName !== '1Дефектовано!') {
-          works.push(item);
-        }
-      })
-      return works
+      return this.act.Works.filter(item =>
+        item.Group === 'Выполнено' && item.WorkerName !== '1Дефектовано!'
+      );
     },
     products() {
       return this.act.Products
@@ -253,16 +243,10 @@ export default {
       return works
     },
     recommendations() {
-      const works = [];
-      this.act.Works.forEach((item) => {
-        if (
-          (item.WorkerName === '1Дефектовано!' || item.Group === 'Комментарий') &&
-          item.Group !== 'Наряд-заказ'
-        ) {
-          works.push(item);
-        }
-      })
-      return works
+      return this.act.Works.filter(item =>
+        (item.WorkerName === '1Дефектовано!' || item.Group === 'Комментарий') &&
+        item.Group !== 'Наряд-заказ' && item.Notes
+      );
     }
   },
   methods: {},
@@ -273,5 +257,11 @@ export default {
 </script>
 
 <style scoped>
+.blue {
+  color: #0014ff;
+}
 
+.red {
+  color: #ff0000ff;
+}
 </style>

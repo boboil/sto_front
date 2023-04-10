@@ -29,7 +29,7 @@
       </div>
       <nav class="menu" v-show="showMenu">
         <b>
-          {{ $auth.$state.user }}
+          {{ user.Name }}
         </b>
         <br>
         <button
@@ -98,6 +98,7 @@
 </template>
 
 <script>
+import {mapGetters} from "vuex";
 import {AUTH_ROUTES, USER_ROUTES} from "~/constants";
 
 export default {
@@ -108,6 +109,9 @@ export default {
     }
   },
   computed: {
+    ...mapGetters({
+      user: 'user/getUser'
+    }),
     USER_ROUTES() {
       return USER_ROUTES
     }

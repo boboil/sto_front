@@ -1,4 +1,5 @@
 import { get } from 'lodash'
+import moment from 'moment';
 import {
   AUTH_ROUTES,
 } from '@/constants'
@@ -79,3 +80,16 @@ export const assetImage = (src, ext = 'svg') => {
 export const reversedKeys = (actsList) => {
   return Object.keys(actsList).reverse();
 }
+
+export const dividedActList = (list, param) => {
+  return list.reduce((acc, item) => {
+    const divider = item[param]
+    if (!acc[divider]) {
+      acc[divider] = []
+    }
+    acc[divider].push(item)
+    return acc
+  }, {});
+}
+
+export const formatDate = date => moment(date).format('DD-MM-YYYY');
