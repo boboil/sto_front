@@ -3,6 +3,7 @@ import moment from "moment";
 
 export const state = () => ({
   availableTimes: [],
+  timeList: []
 });
 
 export const getters = {
@@ -11,7 +12,7 @@ export const getters = {
   },
 }
 export const mutations = {
-  setAvailableTimes(state, times) {
+  setTimeList(state, times) {
     state.availableTimes = times;
   },
 };
@@ -50,8 +51,16 @@ export const actions = {
     //   });
     // }
 
-    commit("setAvailableTimes", dataList);
+    commit("setTimeList", dataList);
   },
+  async fetchCalendarTime({ commit }, day) {
+    const response = await this.$axios.get(
+      `/api/google-available-time/${day}`
+    )
+    const data = await response.data
+    console.log(data)
+    commit('setTimeList', data)
+  }
 }
 
 export default {

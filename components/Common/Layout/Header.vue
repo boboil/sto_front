@@ -11,7 +11,11 @@
       <div class="manager-feedback">
         <ul class="social_chats">
           <li>
-            <button type="button" class="btn btn-light" data-toggle="modal" data-target="#exampleModal">
+            <button
+              type="button"
+              class="btn btn-light"
+              @click="contactModalShow = !contactModalShow"
+            >
               Зв'язатися з нами!
             </button>
           </li>
@@ -35,8 +39,7 @@
         <button
           type="button"
           class="btn btn-info"
-          id="prePayButton"
-          @onclick="freePrePay"
+          @click="prepayModalShow = !prepayModalShow"
         >
           Внести передплату
         </button>
@@ -44,7 +47,6 @@
           type="button"
           data-toggle="modal"
           class="btn btn-warning"
-          data-target="#diagnosticModal"
         >
           Записатись
         </button>
@@ -94,18 +96,40 @@
         </a>
       </nav>
     </div>
+    <ModalPopup :is-open.sync="prepayModalShow" title="Сума авансу">
+      <Prepay
+        slot-scope="data"
+        v-bind="data"
+      />
+    </ModalPopup>
+    <ModalPopup :is-open.sync="contactModalShow" title="Просто напишіть своє запитання!">
+      <ContactForm
+        slot-scope="data"
+        v-bind="data"
+      />
+    </ModalPopup>
   </div>
 </template>
 
 <script>
-import {mapGetters} from "vuex";
-import {AUTH_ROUTES, USER_ROUTES} from "~/constants";
+import {mapGetters} from 'vuex'
+import {AUTH_ROUTES, USER_ROUTES} from '@/constants'
+import Prepay from '@/components/Payment/Prepay'
+import ModalPopup from '@/components/ModalPopup'
+import ContactForm from '~/components/Common/Form/ContactForm'
 
 export default {
   name: "Header",
+  components: {
+    Prepay,
+    ModalPopup,
+    ContactForm
+  },
   data() {
     return {
-      showMenu: false
+      showMenu: false,
+      prepayModalShow: false,
+      contactModalShow: false
     }
   },
   computed: {
@@ -117,9 +141,6 @@ export default {
     }
   },
   methods: {
-    freePrePay() {
-
-    },
     async logout() {
       await this.$auth.logout()
       await this.$router.push(AUTH_ROUTES.SIGN_IN)

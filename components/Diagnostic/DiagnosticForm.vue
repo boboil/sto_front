@@ -2,10 +2,31 @@
   <form @submit.prevent="submitForm">
     <div class="form-group">
       <select
-        v-model="selectedCar"
+        v-model="fields.reason"
+        class="form-control"
+        id="selectDiagnostic"
+        @change="selectDiagnostic"
+      >
+        <option value="placeholder" selected="" disabled="" hidden="">Виберіть тип</option>
+        <option data-diagnostic="camberToe" value="camberToe">Зробити розвал-сходження</option>
+        <option data-diagnostic="diagnostic" value="diagnostic">Є проблема, потрібно
+          подивитись
+        </option>
+        <option data-diagnostic="diagnostic" value="diagnostic">Просто давненько у Вас
+          не був
+        </option>
+        <option data-diagnostic="diagnostic" value="diagnostic">Проїхав 7-10т км,
+          потрібно ТО
+        </option>
+        <option data-diagnostic="diagnostic" value="diagnostic">Зробити шиномонтаж</option>
+      </select>
+    </div>
+    <div v-if="fields.reason !== 'placeholder'" class="form-group">
+      <select
+        v-model="fields.selectedCar"
         class="form-control"
         required
-        @change="showAnotherAvto"
+        @change="selectCar"
       >
         <option value="" disabled hidden>Виберіть автомобіль</option>
         <option
@@ -16,9 +37,23 @@
         </option>
         <option value="another">Інший автомобіль</option>
       </select>
+      <input
+        v-if="fields.selectedCar === 'another'"
+        v-model="fields.another_car"
+        type="text"
+        class="form-control mt-3"
+        required
+        placeholder="Введіть модель та рік авто">
     </div>
-    <div class="form-check form-group">
-      <div>
+    <div
+      v-if="fields.reason === 'camberToe' ||
+            fields.reason === 'diagnostic'"
+      class="form-check form-group"
+    >
+      <div
+        v-if="fields.reason === 'camberToe' ||
+              fields.reason === 'diagnostic'"
+      >
         <label class="btn btn-secondary" for="today">Сьогодні</label>
         <input
           v-model="fields.diagnosticDay"
@@ -46,7 +81,11 @@
         <input type="hidden" name="name" id="diagnosticName" :value="diagnosticName"/>
       </div>
     </div>
-    <div class="form-group">
+    <div
+      v-if="fields.reason === 'camberToe' ||
+            fields.reason === 'diagnostic'"
+      class="form-group text-align-center"
+    >
       <input
         v-model="fields.transfer"
         type="checkbox"
@@ -55,8 +94,19 @@
         @change="transferAvto"
       />
       <label class="btn btn-secondary transfer" for="transfer">Хочу трансфер до СТО</label>
+      <input
+        v-if="fields.transfer"
+        v-model="fields.another_address"
+        type="text"
+        required
+        placeholder="Введіть адресу звідки забрати авто"
+        class="form-control mt-2"
+      >
     </div>
-    <div class="form-group">
+    <div
+      v-if="fields.reason === 'camberToe' ||
+            fields.reason === 'diagnostic'"
+      class="form-group">
       <label for="question">Час</label>
       <select
         v-model="fields.selectedTime"
@@ -86,19 +136,25 @@
 
 <script>
 import {mapGetters} from "vuex";
-import {assetIcon} from "@/helpers";
+import ModalPopupFooter from '@/components/ModalPopupFooter'
 
 export default {
+  components: {
+    ModalPopupFooter
+  },
   data() {
     return {
       fields: {
+        reason: 'placeholder',
         selectedCar: '',
         selectedTime: '',
         diagnosticDay: null,
         transfer: '',
-        question: ''
+        question: '',
+        another_address: '',
+        another_car: ''
       },
-      selectedCar: "",
+      selectedCar: [],
       selectedTime: "",
       diagnosticName: "",
       question: "",
@@ -113,66 +169,39 @@ export default {
       user: 'user/getUser'
     }),
     availableTimes() {
-      if (!this.fields.diagnosticDay){
+      if (!this.fields.diagnosticDay) {
         return []
       }
       return this.time
     }
   },
   methods: {
-    showAnotherAvto() {
-
+    selectDiagnostic(event) {
+      const selectedIndex = event.target.selectedIndex
+      this.diagnosticName = event.target.options[selectedIndex].text
+    },
+    selectCar(event) {
+      const selectedIndex = event.target.selectedIndex
+      this.selectedCar = event.target.options[selectedIndex].text
     },
     async syncTime() {
-      await this.$store.dispatch('time/checkAvailableTime', this.fields.diagnosticDay)
+      if (this.fields.reason === 'camberToe') {
+        await this.$store.dispatch('time/fetchCalendarTime', this.fields.diagnosticDay)
+      } else {
+        await this.$store.dispatch('time/checkAvailableTime', this.fields.diagnosticDay)
+      }
     },
     transferAvto() {
       // Add your logic for transferring the car here
     },
     submitForm() {
-      const diagnosticReason = 'test'
-      let startTime
-      const currentTime = this.$moment()
-      if (this.fields.diagnosticDay === "tomorrow") {
-        startTime = `${this.$moment().add(1, "day").format("YYYY-MM-DD")}T${this.fields.selectedTime}`
-      } else {
-        startTime = `${this.$moment().add(1, "day").format("YYYY-MM-DD")}T${this.fields.selectedTime}`
-      }
-      // finishTime = this.$moment(this.fields.selectedTime, 'HH:mm').add(1, "hour").format('H:mm')
-      const finishTime = currentTime.hour(this.fields.selectedTime).format('HH:mm:ss')
-        console.log(finishTime)
       const data = {
-        Name: this.user.Name,
-        Phone: this.user.Phone,
-        Email: '',
-        Address: '',
-        Notes: 'Онлайн, ' + diagnosticReason,
-        Delivery: '',
-        UserCarID: this.fields.selectedCar !== 'another' ? this.fields.selectedCar : 7401,
-        StoPostID: 99,
-        RemTypeID: 74,
-        WorkReasonNotes: diagnosticReason + ' ' + this.fields.question,
-        WorkStartTime: startTime,
-        WorkFinishTime: finishTime,
-        Currency: '',
-        DeliveryAmount: 0.00,
-        ProductAmount: 0.00,
-        WorksAmount: 0.00,
-        Total: 0.00,
-        StatusCode: 'N',
-        DocCode: 'U',
-        Works: [
-          {
-            ID: 805,
-            Quantity: 1.0,
-            Name: '',
-            StdHour: 0.00,
-            Price: 0.00,
-            Total: 0.00,
-            Currency: '',
-          },
-        ],
-      };
+        user: this.user,
+        fields: this.fields,
+        reason: this.diagnosticName,
+        selectedCar: this.selectedCar
+      }
+      this.$store.dispatch('order/createDiagnosticOrder', data)
     },
     closeModal() {
       const {modalId} = this.$attrs
@@ -184,3 +213,8 @@ export default {
   }
 };
 </script>
+<style lang="scss" scoped>
+.text-align-center {
+  text-align: center !important;
+}
+</style>

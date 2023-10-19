@@ -138,7 +138,8 @@ export const actions = {
     await this.$auth.setUser(data)
     commit('setUser', data)
   },
-  async fetchActs({commit, state}, orders) {
+  async fetchActs({commit, state}) {
+    const orders = state.historyList
     const dataPromises = orders.map(async (order) => {
       const no = order.No.replace(/\d/g, '');
       if (no === 'W' && (order.DocCode === 'A' || order.DocCode === 'F')) {
@@ -171,6 +172,15 @@ export const actions = {
     )
     const act = await response.data
     commit('setActDetail', act)
+  },
+  async sendMessageToManager({commit, state}, message = {}) {
+    try {
+      const response = await this.$axios.post('/api/manager-connect',
+        {message})
+      const data = response.data
+    } catch (e) {
+
+    }
   }
 }
 

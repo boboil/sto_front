@@ -158,7 +158,7 @@ export const getters = {
   },
   getAllTalons({ allTalons }) {
     return allTalons
-  },
+  }
 }
 export const mutations = {
   setAvailableTimes(state, times) {
@@ -182,10 +182,9 @@ export const mutations = {
 };
 
 export const actions = {
-  async createDiagnosticOrder({commit, dispatch}, params = {}) {
+  async createDiagnosticOrder({commit, dispatch}, data = {}) {
     try {
-      await this.$axios.post('/csws/cs/order', JSON.stringify(params))
-
+      await this.$axios.post('/api/add-diagnostic-order', data)
     } catch (e) {
 
     }
@@ -230,7 +229,16 @@ export const actions = {
     const workResponse = await this.$axios.get('/csws/cs/workgroup/63');
     const talons = workResponse.data;
     commit('setAllTalons', talons);
-  }
+  },
+  async createPrepay({commit, dispatch}, prams = {}) {
+    try {
+      const response = await this.$axios.post('/api/pre-pay', prams)
+      const data = response.data
+      window.location.href = data.url;
+    } catch (e) {
+
+    }
+  },
 }
 
 export default {

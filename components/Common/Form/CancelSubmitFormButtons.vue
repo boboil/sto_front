@@ -6,11 +6,11 @@
     <b-button
       v-if="!hideCancel"
       variant="outline-link"
-      class="btn-cancel text-uppercase"
+      class="btn-secondary text-uppercase"
       :disabled="disabledCancel"
       @click="$emit('cancel')"
     >
-      Cancel
+      Закрити
     </b-button>
     <b-button
       type="submit"

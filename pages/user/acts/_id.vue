@@ -5,7 +5,7 @@
       <section class="block-one-act">
         <div class="wrap">
           <h1 class="block-title">
-            АКТ №{{ act.No }} від {{ act.Date }}
+            АКТ №{{ act.No }} від {{ moment(act.Date).format('DD-MM-YYYY') }}
           </h1>
           <button type="button" class="btn btn-info" id="prePayButton" v-if="act.IsPaid === 'N'">
             Оплатити акт
@@ -184,6 +184,7 @@ import {mapGetters} from "vuex"
 import {convertDateToFormat} from "@/helpers"
 import Header from "@/components/Common/Layout/Header"
 import {USER_ROUTES} from "@/constants";
+import moment from "moment/moment";
 
 export default {
   name: "ActDetail",
@@ -201,6 +202,9 @@ export default {
     }
   },
   computed: {
+    moment() {
+      return moment
+    },
     USER_ROUTES() {
       return USER_ROUTES
     },

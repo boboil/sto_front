@@ -1,7 +1,7 @@
 import { LocalScheme } from '~auth/runtime'
 
-function getProp(obj, path, defaultValue) {
-  const value = path.split('.').reduce((o, p) => (o && o[p]) ? o[p] : defaultValue, obj)
+const getProp = (obj = {}, path, defaultValue) => {
+  const value = path.split('.').reduce((o, p) => o[p] || defaultValue, obj)
   return value === undefined ? defaultValue : value
 }
 

@@ -136,6 +136,8 @@ export default {
   name: "allJobs",
   components: {Header},
   async fetch({store, params, route, $auth}) {
+    await store.dispatch('user/fetchHistoryList')
+    await store.dispatch('user/fetchActs')
     await store.dispatch('user/fetchCars')
   },
   data() {
@@ -197,7 +199,10 @@ export default {
       }
       const car = this.cars.find(car => car.ID === this.selectedCar)
       this.filteredList = this.jobs.filter(act => {
-        return act.CarName.includes(car.RegistrationNo);
+        if (car.RegistrationNo === null) {
+          return false
+        }
+        return act.CarName && act.CarName.includes(car.RegistrationNo)
       })
     }
   },

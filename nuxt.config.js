@@ -27,7 +27,8 @@ export default {
   plugins: [
     { src: '~/plugins/vuex-cache.js', mode: 'client' },
     { src: '~/plugins/axios.js', mode: 'client' },
-    { src: '~/plugins/moment.js', mode: 'client' }
+    { src: '~/plugins/moment.js', mode: 'client' },
+    '~/plugins/auth-interceptor.js'
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -43,7 +44,9 @@ export default {
     grantType: 'password',
     grantTypeRefreshToken: 'refresh_token',
     appHost: process.env.CLIENT_URI,
-    apiHost: process.env.API_ENDPOINT
+    apiHost: process.env.API_ENDPOINT,
+    telegramUrl: process.env.TELEGRAM_URL,
+    auth_endpoint: process.env.AUTH_ENDPOINT
   },
   /*
    ** Customize the progress-bar color
@@ -58,42 +61,32 @@ export default {
   auth: {
     strategies: {
       local: {
-        scheme: '@/schemes/localScheme',
-        endpoints: {
-          login: {
-            url: process.env.AUTH_ENDPOINT,
-            method: 'post',
-            propertyName: 'access_token',
-          },
-          logout: false,
-          user: { url: '/csws/cs/user', method: 'get', property: false },
-          autoFetchUser: false
-        },
-        tokenRequired: true,
+        scheme: 'local',
         token: {
           property: 'access_token',
-          type: 'Bearer',
-          name: 'Authorization',
-          storage: 'localStorage',
-          maxAge: 1800,
+          global: true,
+          type: 'Bearer'
         },
-      },
+        user: {
+          property: false,
+        },
+        endpoints: {
+          login: { url: '/csws/authorize', method: 'post' },
+          logout: false,
+          user: { url: '/csws/cs/user', method: 'get' }
+        }
+      }
     },
-    redirect: {
-      logout: '/',
-      user: '/user/profile',
-      callback: '/'
-    },
-    autoFetchUser: false,
-    localStorage: true,
-    watchLoggedIn: false
+    localStorage: {
+      prefix: 'gold_avto.'
+    }
   },
   // Modules: https://go.nuxtjs.dev/config-modules
   modules: [
     // https://go.nuxtjs.dev/bootstrap
     'bootstrap-vue/nuxt',
     '@nuxtjs/axios',
-    '@nuxtjs/auth',
+    '@nuxtjs/auth-next',
     '@nuxtjs/proxy'
   ],
   proxy: {
@@ -102,7 +95,15 @@ export default {
       changeOrigin: true,
       pathRewrite: { '^/csws': '/' },
       headers: {
-        'Access-Control-Allow-Origin': 'http://localhost:3000'
+        'Access-Control-Allow-Origin': '*'
+      }
+    },
+    '/api': {
+      target: 'http://cabinet.sto.sumy.ua/api',
+      changeOrigin: true,
+      pathRewrite: { '^/api': '/' },
+      headers: {
+        'Access-Control-Allow-Origin': '*'
       }
     },
   },

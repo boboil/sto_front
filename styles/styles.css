@@ -926,7 +926,7 @@ main {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: transparent url("../assets/img/overlay.png") 8px 13px no-repeat;
+  background: transparent url("/img/overlay.png") 8px 13px no-repeat;
   background-size: 343px 117px;
   flex-grow: 1; }
   .block-auth .auth-popup {

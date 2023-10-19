@@ -1,11 +1,11 @@
 <template>
   <div>
-    <Header/>
+    <Header />
     <div class="wrapper">
       <section class="block-auth">
         <div class="auth-popup">
           <div class="auth-popup-title">
-            {{ $auth.user.fullName }}
+            {{ user.Name }}
           </div>
           <button
             class="nav-btn"
@@ -49,16 +49,7 @@
           >
             Акти виконаних робіт
           </NuxtLink>
-          <div class="mb-2 mt-2 telegram-connect-block">
-            <div class="links-block justify-content-start">
-              <a href="tel:+380662050303" class="pl-2">066 205 03 03 - Олександр</a>
-              <a href="https://t.me/+380662050303" target="_blank"><i class="fab fa-telegram fa-2x ml-2"></i></a>
-            </div>
-            <div class="links-block justify-content-start">
-              <a href="tel:+380990206700" class="pl-2">099 02 06 700 - Дмитро</a>
-              <a href="https://t.me/+380990206700" target="_blank"><i class="fab fa-telegram fa-2x ml-2"></i></a>
-            </div>
-          </div>
+          <FooterContact />
           <div class="phone-main">
             <a href="https://forms.gle/A5oMq9Hjt8AKcW7n6" class="btn btn-info" target="_blank">Лишити відгук</a>
           </div>
@@ -77,13 +68,19 @@
 <script>
 import {mapGetters} from 'vuex'
 import {USER_ROUTES} from '~/constants'
-import Header from "@/components/Common/Layout/Header";
-import ModalPopup from "@/components/ModalPopup";
-import DiagnosticForm from "@/components/Diagnostic/DiagnosticForm";
+import Header from '@/components/Common/Layout/Header'
+import ModalPopup from '@/components/ModalPopup'
+import DiagnosticForm from '@/components/Diagnostic/DiagnosticForm'
+import FooterContact from '@/components/Common/Form/FooterContact'
 
 export default {
   name: "index",
-  components: {Header, ModalPopup, DiagnosticForm},
+  components: {
+    FooterContact,
+    Header,
+    ModalPopup,
+    DiagnosticForm
+  },
   data() {
     return {
       acts: [],
@@ -100,16 +97,9 @@ export default {
       return USER_ROUTES
     },
     ...mapGetters({
-      list: 'user/getHistoryList'
+      list: 'user/getHistoryList',
+      user: 'user/getUser'
     })
-  },
-  methods: {
-    async getActs() {
-      await this.$store.dispatch('user/fetchActs', this.list)
-    }
-  },
-  created() {
-    this.getActs()
   }
 }
 </script>

@@ -41,7 +41,7 @@
                       {{ works.Name }}
                       <template v-if="works.Notes">
                         <br>Примітка:
-                        <small>{{works.Notes}}</small>
+                        <small>{{ works.Notes }}</small>
                       </template>
                     </div>
                   </template>
@@ -62,11 +62,10 @@ import {mapGetters} from "vuex";
 export default {
   name: "Recommendations",
   components: {Header},
-  async fetch({store, params, route, $auth}) {
-    await Promise.all([
-      store.dispatch('user/fetchRecommendations'),
-      store.dispatch('user/fetchCars')
-    ])
+  async asyncData({store, params, route, $auth}) {
+   await store.dispatch('user/fetchHistoryList')
+   await store.dispatch('user/fetchRecommendations')
+   await store.dispatch('user/fetchCars')
   },
   data() {
     return {
@@ -92,7 +91,10 @@ export default {
       }
       const car = this.cars.find(car => car.ID === this.selectedCar)
       this.filteredList = this.recommendations.filter(act => {
-        return act.CarName.includes(car.RegistrationNo);
+        if (car.RegistrationNo === null) {
+          return false
+        }
+        return act.CarName && act.CarName.includes(car.RegistrationNo)
       })
     }
   },
