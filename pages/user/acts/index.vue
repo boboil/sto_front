@@ -90,11 +90,6 @@ export default {
     await store.dispatch('user/fetchHistoryList')
     await store.dispatch('user/fetchActs')
     await store.dispatch('user/fetchCars')
-    // await Promise.all([
-    //   store.dispatch('user/fetchHistoryList'),
-    //   store.dispatch('user/fetchActs'),
-    //   store.dispatch('user/fetchCars')
-    // ])
   },
   data() {
     return {

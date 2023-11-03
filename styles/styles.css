@@ -720,30 +720,6 @@
   color: silver;
   font-size: 11px; }
 
-@font-face {
-  font-family: "Gilroy";
-  src: url("@/assets/fonts/Gilroy-Light.woff2") format("woff2");
-  font-style: normal;
-  font-weight: 300; }
-
-@font-face {
-  font-family: "Gilroy";
-  src: url("@/assets/fonts/Gilroy-Regular.woff2") format("woff2");
-  font-style: normal;
-  font-weight: 400; }
-
-@font-face {
-  font-family: "Gilroy";
-  src: url("@/assets/fonts/Gilroy-Medium.woff2") format("woff2");
-  font-style: normal;
-  font-weight: 500; }
-
-@font-face {
-  font-family: "Gilroy";
-  src: url("@/assets/fonts/Gilroy-Bold.woff2") format("woff2");
-  font-style: normal;
-  font-weight: 700; }
-
 * {
   box-sizing: border-box;
   padding: 0;
@@ -950,23 +926,6 @@ main {
       width: 100%; }
       .block-auth .auth-popup .field + .field {
         margin-top: 16px; }
-    .block-auth .auth-popup .input-label {
-      font-size: 12px;
-      font-weight: 700;
-      line-height: 1.32;
-      padding-left: 14px; }
-    .block-auth .auth-popup .input {
-      display: block;
-      width: 100%;
-      margin-top: 4px;
-      height: 40px;
-      border: 1px solid #E2E6E9;
-      color: #010101;
-      padding: 0 14px;
-      font-size: 16px;
-      line-height: 1;
-      font-weight: 300;
-      border-radius: 8px; }
     .block-auth .auth-popup button {
       display: block;
       margin-top: 10px;

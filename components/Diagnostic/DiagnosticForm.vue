@@ -82,8 +82,7 @@
       </div>
     </div>
     <div
-      v-if="fields.reason === 'camberToe' ||
-            fields.reason === 'diagnostic'"
+      v-if="fields.reason === 'diagnostic'"
       class="form-group text-align-center"
     >
       <input

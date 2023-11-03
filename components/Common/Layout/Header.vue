@@ -85,6 +85,13 @@
         >
           Акти виконаних робіт
         </NuxtLink>
+        <NuxtLink
+          :to="USER_ROUTES.USER_PASSWORD_CHANGE.path"
+          type="button"
+          class="nav-btn auth-button font-weight-700"
+        >
+          {{USER_ROUTES.USER_PASSWORD_CHANGE.pageTitle}}
+        </NuxtLink>
         <button class="m-3" @click="logout">
           <b>Вийти</b>
         </button>

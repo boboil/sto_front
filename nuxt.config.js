@@ -28,6 +28,7 @@ export default {
     { src: '~/plugins/vuex-cache.js', mode: 'client' },
     { src: '~/plugins/axios.js', mode: 'client' },
     { src: '~/plugins/moment.js', mode: 'client' },
+    { src: '~plugins/v-mask.js', mode: 'client' },
     '~/plugins/auth-interceptor.js'
   ],
 
@@ -43,7 +44,7 @@ export default {
   env: {
     grantType: 'password',
     grantTypeRefreshToken: 'refresh_token',
-    appHost: process.env.CLIENT_URI,
+    appHost: process.env.CLIENT_URI_PROD,
     apiHost: process.env.API_ENDPOINT,
     telegramUrl: process.env.TELEGRAM_URL,
     auth_endpoint: process.env.AUTH_ENDPOINT
@@ -89,6 +90,10 @@ export default {
     '@nuxtjs/auth-next',
     '@nuxtjs/proxy'
   ],
+  axios: {
+    baseURL: 'https://dev.sto.sumy.ua',
+    proxy: true
+  },
   proxy: {
     '/csws': {
       target: 'http://95.217.38.198/csws',
@@ -99,7 +104,7 @@ export default {
       }
     },
     '/api': {
-      target: 'http://cabinet.sto.sumy.ua/api',
+      target: 'https://cabinet.sto.sumy.ua/api',
       changeOrigin: true,
       pathRewrite: { '^/api': '/' },
       headers: {
@@ -107,7 +112,6 @@ export default {
       }
     },
   },
-
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
     extend(config, ctx) {},
@@ -116,6 +120,6 @@ export default {
     ]
   },
   server: {
-    host: '0.0.0.0' // default: localhost
+    host: '0.0.0.0'
   }
 }

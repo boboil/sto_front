@@ -51,12 +51,18 @@
           </NuxtLink>
           <FooterContact />
           <div class="phone-main">
-            <a href="https://forms.gle/A5oMq9Hjt8AKcW7n6" class="btn btn-info" target="_blank">Лишити відгук</a>
+            <a href="https://forms.gle/A5oMq9Hjt8AKcW7n6" class="btn btn-info" target="_blank">Залишити відгук</a>
           </div>
         </div>
       </section>
       <ModalPopup :is-open.sync="diagnosticModalShow" title="Онлайн запис!">
         <DiagnosticForm
+          slot-scope="data"
+          v-bind="data"
+        />
+      </ModalPopup>
+      <ModalPopup :is-open.sync="needToChange" title="Попередження">
+        <Warning
           slot-scope="data"
           v-bind="data"
         />
@@ -67,15 +73,17 @@
 
 <script>
 import {mapGetters} from 'vuex'
-import {USER_ROUTES} from '~/constants'
+import {USER_ROUTES} from '@/constants'
 import Header from '@/components/Common/Layout/Header'
 import ModalPopup from '@/components/ModalPopup'
 import DiagnosticForm from '@/components/Diagnostic/DiagnosticForm'
 import FooterContact from '@/components/Common/Form/FooterContact'
+import Warning from '@/components/Common/ChangePassword/Warning'
 
 export default {
   name: "index",
   components: {
+    Warning,
     FooterContact,
     Header,
     ModalPopup,
@@ -98,9 +106,11 @@ export default {
     },
     ...mapGetters({
       list: 'user/getHistoryList',
-      user: 'user/getUser'
+      user: 'user/getUser',
+      needToChange: 'user/getNeedToChangePassword'
     })
-  }
+  },
+
 }
 </script>
 

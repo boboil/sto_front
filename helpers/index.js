@@ -1,16 +1,7 @@
-import { get } from 'lodash'
-import moment from 'moment';
+import moment from 'moment'
 import {
   AUTH_ROUTES,
 } from '@/constants'
-
-export const asyncTimeout = (ms = 1000) => {
-  return new Promise((resolve) => setTimeout(resolve, ms))
-}
-export const formatter = new Intl.NumberFormat('en-US', {
-  style: 'currency',
-  currency: 'USD'
-})
 
 export const convertDateToFormat = (
   date = new Date(),
@@ -36,22 +27,6 @@ export const convertDateTimeToFormat = (
   const [h, m] = tm.split(':')
 
   return `${h}:${m} ${mm}/${dd}/${yyyy}`
-}
-
-export const convertDateTimeAmPmToFormat = (
-  date = new Date(),
-  isHtml = '',
-  format = 'h:m mm/dd/yyyy'
-) => {
-  const space = isHtml === 'html' ? '&nbsp' : ' '
-  const [dt, tm] = date.toISOString().split('T')
-  const [yyyy, mm, dd] = dt.split('-')
-  const [h, m] = tm.split(':')
-  const ampm = h >= 12 ? 'pm' : 'am'
-  let hours = h % 12
-  hours = hours || 12 // the hour '0' should be '12'
-
-  return `${mm}/${dd}/${yyyy} ${hours}:${m}${space}${ampm}`
 }
 export const genRandomUID = (prefix = 'UID', len = 7) => {
   return `${prefix}_${Math.random()
@@ -93,3 +68,10 @@ export const dividedActList = (list, param) => {
 }
 
 export const formatDate = date => moment(date).format('DD-MM-YYYY');
+
+export const  formatDateForDiagnostic = (date) => {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+}
+export const formatTime = (date) => {
+  return `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+}

@@ -7,10 +7,14 @@ export const state = () => ({
   act: {},
   cars: [],
   recommendationList: [],
-  user: {}
+  user: {},
+  needToChangePassword: false
 })
 
 export const getters = {
+  getNeedToChangePassword({needToChangePassword}) {
+    return needToChangePassword
+  },
   getHistoryList(state, getters) {
     return state.historyList
   },
@@ -118,6 +122,9 @@ export const mutations = {
   },
   setUser(state, user = {}) {
     state.user = user
+  },
+  setNeedToChangePassword(state, isNeedChange = false) {
+    state.needToChangePassword = isNeedChange
   }
 }
 
@@ -137,6 +144,13 @@ export const actions = {
     const data = await response.data
     await this.$auth.setUser(data)
     commit('setUser', data)
+  },
+  changeNeedToChangePassword({commit}, isNeedChange) {
+    commit('setNeedToChangePassword', isNeedChange)
+  },
+  async changePassword({commit}, params) {
+    const response = await this.$axios.post('/csws/cs/changepassword', params)
+    const data = response.data
   },
   async fetchActs({commit, state}) {
     const orders = state.historyList

@@ -9,8 +9,8 @@
     <template v-if="hint" #label class="text-uppercase">
       <span class="d-flex justify-content-between">
         <span>{{ elementLabel }}</span>
-        <span class="text-muted">{{ hint }}</span>
       </span>
+      <small class="text-muted font-size-10">{{ hint }}</small>
     </template>
     <b-form-input
       :id="uid"
@@ -121,6 +121,10 @@ export default {
       default: false
     },
     errorMessage: {
+      type: String,
+      default: ''
+    },
+    ariaDescription: {
       type: String,
       default: ''
     }

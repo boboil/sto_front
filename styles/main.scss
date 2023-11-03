@@ -1,3 +1,7 @@
+@import "variables";
+@import "functions";
+@import 'base/fonts';
+
 .block-auth {
   .auth-popup {
     width: 100%;
@@ -31,8 +35,14 @@
 .green {
   color: green;
 }
+
 .btn-success, .btn-save {
   color: #fff;
   background-color: #28a745;
   border-color: #28a745;
+}
+
+button[disabled="disabled"] {
+  background-color: $yellow-disabled!important;
+  opacity: 0.5;
 }

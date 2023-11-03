@@ -2,21 +2,30 @@
   <form ref="form" @submit.prevent="handleSubmit" class="auth-popup-form">
     <div class="field">
       <FormInput
-        v-model="fields.username"
+        v-model="fields.password"
         type="text"
-        placeholder="Телефон"
-        v-mask="'380#########'"
+        placeholder="Старий пароль:"
         required
-        label="Телефон:"
+        label="Старий пароль:"
       />
     </div>
     <div class="field">
       <FormInput
-        v-model="fields.password"
-        type="password"
-        placeholder="Пароль"
+        v-model="fields.newPassword"
+        type="text"
+        placeholder="Новий пароль:"
         required
-        label="Пароль:"
+        label="Новий пароль:"
+        hint="за замовчуванням Ваш номер телефону у форматі 380..."
+      />
+    </div>
+    <div class="field">
+      <FormInput
+        v-model="fields.repeatNewPassword"
+        type="text"
+        placeholder="Новий пароль:"
+        required
+        label="Новий пароль:"
         hint="за замовчуванням Ваш номер телефону у форматі 380..."
       />
     </div>
@@ -24,7 +33,7 @@
       type="submit"
       :disabled="!isValid"
     >
-      Увійти
+      Змінити пароль
     </button>
   </form>
 </template>
@@ -36,17 +45,16 @@ import {AUTH_ROUTES, USER_ROUTES} from '@/constants'
 import FormInput from '@/components/Common/Form/Input'
 
 export default {
-  name: 'FormSignIn',
-
-  middleware: 'guest',
+  name: 'FormChangePassword',
 
   components: {FormInput},
 
   data: () => ({
     AUTH_ROUTES,
     fields: {
-      username: '',
-      password: ''
+      password: '',
+      newPassword: '',
+      repeatNewPassword: '',
     },
     locked: false,
     assetImage
@@ -54,29 +62,29 @@ export default {
 
   computed: {
     isValid() {
-      return this.fields.username && this.fields.password;
+      return (
+        this.fields.password &&
+        this.fields.newPassword &&
+        this.fields.repeatNewPassword &&
+        this.fields.newPassword === this.fields.repeatNewPassword
+      )
     }
   },
 
   methods: {
     async handleSubmit() {
       try {
-        await this.$auth.loginWith('local', {
-          data: {
-            username: this.fields.username,
-            password: this.fields.password,
-            grant_type: 'password'
-          }
-        });
-
-        if (this.fields.username === this.fields.password) {
-          await this.$store.dispatch('user/changeNeedToChangePassword', true)
+        const params = {
+          oldpassword: this.fields.password,
+          password1: this.fields.newPassword,
+          password2: this.fields.repeatNewPassword
         }
-        if (this.$auth.loggedIn) {
-          await this.$router.push(USER_ROUTES.USER_PROFILE.path)
-        } else {
-          console.error('Login failed');
-        }
+        await this.$store.dispatch('user/changePassword', params)
+        await this.$store.dispatch(
+          'user/changeNeedToChangePassword',
+          false
+        )
+        await this.$router.push(USER_ROUTES.USER_PROFILE.path)
       } catch (e) {
         // ...
       }

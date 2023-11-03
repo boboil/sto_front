@@ -1,0 +1,84 @@
+@font-face {
+  font-family: "Gilroy";
+  src: url("@/assets/fonts/Gilroy-Light.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 300;
+}
+
+@font-face {
+  font-family: "Gilroy";
+  src: url("@/assets/fonts/Gilroy-Regular.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: "Gilroy";
+  src: url("@/assets/fonts/Gilroy-Medium.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 500;
+}
+
+@font-face {
+  font-family: "Gilroy";
+  src: url("@/assets/fonts/Gilroy-Bold.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 700;
+}
+
+.font-weight-300 {
+	font-weight: 300;
+}
+.font-weight-500 {
+	font-weight: 500;
+}
+.font-weight-600 {
+	font-weight: 600!important;
+}
+.font-weight-700 {
+	font-weight: 700;
+}
+.font-weight-800 {
+	font-weight: 800;
+}
+.font-weight-900 {
+	font-weight: 900;
+}
+
+.font-size-8 {
+  font-size: 8px!important;
+}
+.font-size-10 {
+	font-size: rem(10);
+}
+.font-size-12 {
+	font-size: rem(12)!important;
+}
+.font-size-16 {
+	font-size: rem(16);
+}
+.font-size-13 {
+	font-size: rem(13);
+}
+.font-size-14 {
+	font-size: rem(14)!important;
+}
+.font-size-15 {
+	font-size: rem(15);
+}
+.font-size-18 {
+  font-size: 18px;
+}
+
+.font-size-19 {
+	font-size: rem(19);
+}
+.font-size-21 {
+	font-size: rem(21);
+}
+.font-size-24 {
+	font-size: rem(24);
+}
+.font-size-34 {
+	font-size: rem(34);
+}

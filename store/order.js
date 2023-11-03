@@ -58,22 +58,22 @@ export const getters = {
     return cancelJobs;
   },
   convertDataForOnlineJobs: () => (prWorks) => {
-    const jobs = {};
+    const jobs = [];
 
     prWorks.forEach(prWork => {
-      const works = prWork.Works.map(item => ({
-        ...item,
-        Date: formatDate(prWork.Date),
-      }));
-
-      const products = prWork.Products
-        .filter(item => item.Group !== 'НЕ_відображати_в_кабінеті')
-        .map(item => ({
+      if (prWork.StatusCode !== 'A') {
+        const works = prWork.Works.map(item => ({
           ...item,
           Date: formatDate(prWork.Date),
         }));
 
-      if (prWork.StatusCode !== 'A') {
+        const products = prWork.Products
+          .filter(item => item.Group !== 'НЕ_відображати_в_кабінеті')
+          .map(item => ({
+            ...item,
+            Date: formatDate(prWork.Date),
+          }));
+
         const deliveryMapping = {
           'Все_замовити': 'Вже погоджено клієнтом',
           'Додано_в_видаткову': 'Вже погоджено клієнтом',
@@ -85,15 +85,13 @@ export const getters = {
           'Опрацьовано_складом': 'Опрацьовуємо, трішки зачекайте',
           '': 'Опрацьовуємо, трішки зачекайте',
         };
-
-        const delivery = deliveryMapping[prWork.Delivery] || 'Опрацьовуємо, трішки зачекайте';
-        const color = prWork.Delivery === 'На_погодженні' ? 'green' : undefined;
+        const deliveryStatus = deliveryMapping[prWork.Delivery] || 'Опрацьовуємо, трішки зачекайте';
 
         jobs[prWork.ID] = {
           works,
           products,
-          date: moment(prWork.Date).format('DD-MM-YYYY'),
-          year: moment(prWork.Date).format('YYYY'),
+          date: formatDate(prWork.Date, 'DD-MM-YYYY'),
+          year: formatDate(prWork.Date, 'YYYY'),
           CarOdometer: prWork.CarOdometer,
           CarName: prWork.CarName,
           orderId: prWork.ID,
@@ -101,13 +99,12 @@ export const getters = {
           No: prWork.No.replace(/[a-z]/gi, ''),
           RecType: prWork.RecType,
           status: prWork.StatusCode,
-          delivery,
-          color,
+          delivery: deliveryStatus,
+          color: prWork.Delivery === 'На_погодженні' ? 'green' : undefined,
         };
       }
     });
-
-    return jobs;
+    return Object.keys(jobs).length ? jobs : [];
   },
   getTalons(state, getters) {
     return getters.processTickets(state.talons)

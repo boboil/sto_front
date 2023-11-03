@@ -47,9 +47,6 @@ export const actions = {
   },
   async register({commit, dispatch}, {email, password, name, phone, recaptcha}) {
     try {
-      // if (!recaptcha) {
-      //   throw new Error('Please fill out the reCAPTCHA');
-      // }
       const response = await this.$axios.post('/csws/cs/registration',
         {
           Email: phone,

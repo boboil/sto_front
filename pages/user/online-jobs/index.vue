@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Header />
+    <Header/>
     <main id="acts_works">
       <section class="block-work-acts">
         <div class="wrap">
@@ -92,15 +92,13 @@ import {mapGetters} from "vuex";
 import {USER_ROUTES} from "~/constants";
 
 export default {
-  name: "Talons",
+  name: "OnlineJob",
   components: {Header},
-  async fetch({store, params, route, $auth}) {
-    await Promise.all([
-      store.dispatch('order/prepareDataForOnline'),
-      store.dispatch('user/fetchCars')
-    ])
+  async asyncData({store, params, route, $auth}) {
+    await store.dispatch('order/prepareDataForOnline')
+    await store.dispatch('user/fetchCars')
   },
-  data(){
+  data() {
     return {
       filteredList: [],
       selectedCar: 0,
@@ -138,9 +136,10 @@ export default {
       })
     }
   },
-  created() {
-    this.filteredList = this.onlineJobs
-    console.log(this.cancelJobs)
+  async mounted() {
+    await this.$store.dispatch('order/prepareDataForOnline')
+    await this.$store.dispatch('user/fetchCars')
+    this.filteredList = Object.keys(this.onlineJobs).length ? this.onlineJobs : []
   }
 }
 </script>

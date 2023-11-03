@@ -1,4 +1,6 @@
 import moment from "moment";
+import {formatTime, formatDateForDiagnostic} from '@/helpers'
+import {TIMES} from '@/constants'
 
 
 export const state = () => ({
@@ -18,47 +20,49 @@ export const mutations = {
 };
 
 export const actions = {
-  async checkAvailableTime({ commit }, day) {
-    // const today = moment();
-    const dataList = ["10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00"];
-    // let sdate, edate;
+  async checkAvailableTime({commit}, day) {
+    const today = new Date();
 
-    // if (day === "tomorrow") {
-    //   sdate = edate = moment().add(1, "day");
-    // } else {
-    //   sdate = edate = moment();
-    // }
-    //
-    // const url = `/csws/cs/stopost/99/${sdate.format("YYYY-MM-DD")}/${edate.format("YYYY-MM-DD")}`;
-    //
-    // const response = await fetch(url);
-    // const dataTimes = await response.json();
-    //
-    // for (const time of dataTimes) {
-    //   const t = moment(time.StartTime).format("H:mm");
-    //   const index = dataList.indexOf(t);
-    //
-    //   if (index !== -1) {
-    //     dataList.splice(index, 1);
-    //   }
-    // }
-    //
-    // if (sdate.isSame(today, "day")) {
-    //   dataList.forEach((item, index) => {
-    //     if (today.isSameOrAfter(moment(item, "H:mm"), "hour")) {
-    //       dataList.splice(index, 1);
-    //     }
-    //   });
-    // }
+    const isWeekend = (date) => date.getDay() === 6;
 
-    commit("setTimeList", dataList);
+    const isTimePast = (time, currentDate) => {
+      const [hour, minutes] = time.split(':').map(Number);
+      return (
+        currentDate.getDate() === today.getDate() &&
+        (
+          today.getHours() > hour ||
+          (today.getHours() === hour && today.getMinutes() >= minutes)
+        )
+      );
+    };
+
+    if (isWeekend(today)) {
+      return [];
+    }
+
+    let selectedDate = new Date(today);
+    if (day === 'tomorrow') {
+      selectedDate.setDate(today.getDate() + 1);
+    }
+
+    const url = `/csws/cs/stopost/99/${formatDateForDiagnostic(selectedDate)}/${formatDateForDiagnostic(selectedDate)}`;
+    const {data: bookedTimesData} = await this.$axios.get(url);
+
+    const isTimeBooked = (time) => {
+      const formattedTime = formatTime(new Date(time.StartTime));
+      return TIMES.includes(formattedTime);
+    };
+
+    const availableTimes = TIMES.filter(time => {
+      return !isTimePast(time, selectedDate) && !bookedTimesData.some(isTimeBooked);
+    });
+    commit('setTimeList', availableTimes);
   },
-  async fetchCalendarTime({ commit }, day) {
+  async fetchCalendarTime({commit}, day) {
     const response = await this.$axios.get(
-      `/api/google-available-time/${day}`
+      `https://cabinet.sto.sumy.ua/api/google-available-time/${day}`
     )
     const data = await response.data
-    console.log(data)
     commit('setTimeList', data)
   }
 }

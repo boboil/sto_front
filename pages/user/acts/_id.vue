@@ -169,7 +169,7 @@
             <button class="nav-btn prev" @click="$router.push(USER_ROUTES.USER_ACTS.path)">
               Назад
             </button>
-            <button class="nav-btn next">
+            <button class="nav-btn next" @click="nextAct">
               Наступний
             </button>
           </div>
@@ -189,7 +189,7 @@ import moment from "moment/moment";
 export default {
   name: "ActDetail",
   components: {Header},
-  async asyncData({ store, params }) {
+  async asyncData({store, params}) {
     await store.dispatch('user/fetchActDetail', params);
   },
   data() {
@@ -210,6 +210,7 @@ export default {
     },
     ...mapGetters({
       act: 'user/getActDetail',
+      actsList: 'user/getActsList',
       cars: 'user/getCars'
     }),
     total() {
@@ -253,7 +254,16 @@ export default {
       );
     }
   },
-  methods: {},
+  methods: {
+    nextAct() {
+      const currentIndex = this.actsList.findIndex(item => this.act.ID === item.ID)
+      console.log(currentIndex)
+      if (currentIndex >= 0 && currentIndex < this.actsList.length - 1) {
+        return this.$router.push(`${USER_ROUTES.USER_ACTS.path}/${this.actsList[currentIndex + 1].ID}`)
+      }
+      this.$router.push(USER_ROUTES.USER_ACTS.path)
+    }
+  },
   created() {
     this.params.actId = this.$route.params.id
   }

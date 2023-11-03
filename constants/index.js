@@ -34,8 +34,12 @@ export const USER_ROUTES = {
     name: 'Acts',
     pageTitle: 'Акти виконаних робіт',
   },
+  USER_PASSWORD_CHANGE: {
+    path: '/user/change-password',
+    name: 'Change password',
+    pageTitle: 'Змінити пароль',
+  },
 }
-export const CURRENCY_SYMBOL = {
-  USD: '$',
-  EUR: '€'
-}
+
+export const TIMES = ["10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00"];
+
