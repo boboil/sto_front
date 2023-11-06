@@ -5,7 +5,7 @@
         v-model="fields.username"
         type="text"
         placeholder="Телефон"
-        v-mask="'380#########'"
+        v-mask="'38##########'"
         required
         label="Телефон:"
       />

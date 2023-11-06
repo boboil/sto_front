@@ -8,35 +8,73 @@ export const state = () => ({
   jobs: [],
   cancelJobs: [],
   talons: [],
-  allTalons: []
+  allTalons: [],
+  singleJob: {}
 });
 
 export const getters = {
-  getAvailableTimes(state, getters) {
+  getAvailableTimes(state) {
     return state.availableTimes
+  },
+  getJobs(state) {
+    return state.jobs
+  },
+  getSingleJob(state) {
+    return state.singleJob
   },
   getOnlineJobs(state, getters) {
     return getters.convertDataForOnlineJobs(state.jobs)
+  },
+  convertDataForOnlineJobs: () => (jobs) => {
+    const onlineJobs = {}
+    jobs.forEach((prWork) => {
+      if (prWork.StatusCode !== 'A') {
+        const works = prWork.Works.map((item) => ({
+          ...item,
+          Date: moment(prWork.Date).format('DD-MM-YYYY'),
+        }))
+
+        const products = prWork.Products.filter((item) => item.Group !== 'НЕ_відображати_в_кабінеті')
+          .map((item) => ({
+            ...item,
+            Date: moment(prWork.Date).format('DD-MM-YYYY'),
+          }))
+
+        onlineJobs[prWork.ID] = {
+          works,
+          products,
+          date: moment(prWork.Date).format('DD-MM-YYYY'),
+          year: moment(prWork.Date).format('YYYY'),
+          CarOdometer: prWork.CarOdometer,
+          CarName: prWork.CarName,
+          orderId: prWork.ID,
+          actId: prWork.No,
+          No: prWork.No.replace(/[a-z]/gi, ''),
+          RecType: prWork.RecType,
+          status: prWork.StatusCode,
+          delivery: prWork.Delivery
+        }
+      }
+    })
+    return onlineJobs
   },
   getCancelJobs(state, getters) {
     return getters.convertDataForCancelJobs(state.jobs)
   },
   convertDataForCancelJobs: () => (prWorks) => {
     const cancelJobs = {};
-
-    prWorks.forEach(prWork => {
+    prWorks.forEach((prWork) => {
       if (prWork.Delivery === 'Відмовлено_клієнтом' && prWork.StatusCode === 'A') {
-        const works = prWork.Works.map(item => ({
+        const works = prWork.Works.map((item) => ({
           ...item,
-          Date: formatDate(prWork.Date),
-        }));
+          Date: moment(prWork.Date).format('DD-MM-YYYY'),
+        }))
 
-        const products = prWork.Products
-          .filter(item => item.Group !== 'НЕ_відображати_в_кабінеті')
-          .map(item => ({
+        const products = prWork.Products.filter((item) => item.Group !== 'НЕ_відображати_в_кабінеті')
+          .map((item) => ({
             ...item,
-            Date: formatDate(prWork.Date),
-          }));
+            Date: moment(prWork.Date).format('DD-MM-YYYY'),
+          }))
 
         cancelJobs[prWork.ID] = {
           works,
@@ -51,60 +89,11 @@ export const getters = {
           RecType: prWork.RecType,
           status: prWork.StatusCode,
           delivery: 'Відмовлено клієнтом'
-        };
+        }
       }
-    });
+    })
 
-    return cancelJobs;
-  },
-  convertDataForOnlineJobs: () => (prWorks) => {
-    const jobs = [];
-
-    prWorks.forEach(prWork => {
-      if (prWork.StatusCode !== 'A') {
-        const works = prWork.Works.map(item => ({
-          ...item,
-          Date: formatDate(prWork.Date),
-        }));
-
-        const products = prWork.Products
-          .filter(item => item.Group !== 'НЕ_відображати_в_кабінеті')
-          .map(item => ({
-            ...item,
-            Date: formatDate(prWork.Date),
-          }));
-
-        const deliveryMapping = {
-          'Все_замовити': 'Вже погоджено клієнтом',
-          'Додано_в_видаткову': 'Вже погоджено клієнтом',
-          'На_погодженні': 'Натисніть для підтвердження замовлення',
-          'ОПРАЦЬОВАНО_СКЛАДОМ': 'Опрацьовуємо, трішки зачекайте',
-          'Очікуємо_на_склад': 'Вже погоджено клієнтом',
-          'Процінити': 'Опрацьовуємо, трішки зачекайте',
-          'Частково_замовити': 'Вже погоджено клієнтом',
-          'Опрацьовано_складом': 'Опрацьовуємо, трішки зачекайте',
-          '': 'Опрацьовуємо, трішки зачекайте',
-        };
-        const deliveryStatus = deliveryMapping[prWork.Delivery] || 'Опрацьовуємо, трішки зачекайте';
-
-        jobs[prWork.ID] = {
-          works,
-          products,
-          date: formatDate(prWork.Date, 'DD-MM-YYYY'),
-          year: formatDate(prWork.Date, 'YYYY'),
-          CarOdometer: prWork.CarOdometer,
-          CarName: prWork.CarName,
-          orderId: prWork.ID,
-          actId: prWork.No,
-          No: prWork.No.replace(/[a-z]/gi, ''),
-          RecType: prWork.RecType,
-          status: prWork.StatusCode,
-          delivery: deliveryStatus,
-          color: prWork.Delivery === 'На_погодженні' ? 'green' : undefined,
-        };
-      }
-    });
-    return Object.keys(jobs).length ? jobs : [];
+    return cancelJobs
   },
   getTalons(state, getters) {
     return getters.processTickets(state.talons)
@@ -151,7 +140,7 @@ export const getters = {
       });
     });
 
-    return allTickets;
+    return allTickets
   },
   getAllTalons({ allTalons }) {
     return allTalons
@@ -175,7 +164,10 @@ export const mutations = {
   },
   setAllTalons(state, talons) {
     state.allTalons = talons;
-  }
+  },
+  setSingleJob(state, singleJob) {
+    state.singleJob = singleJob;
+  },
 };
 
 export const actions = {
@@ -200,6 +192,16 @@ export const actions = {
         }
       }
       commit('setJobs', data);
+    } catch (error) {
+      console.error(error);
+    }
+  },
+  async fetchDataOneJob({commit}, {id,recType}) {
+    try {
+      const orderUrl = `/csws/cs/history/${id}/${recType}`;
+      const response = await this.$axios.get(orderUrl);
+      const data = response.data;
+      commit('setSingleJob', data);
     } catch (error) {
       console.error(error);
     }

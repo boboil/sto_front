@@ -195,6 +195,19 @@ export const actions = {
     } catch (e) {
 
     }
+  },
+  async sendTgMessage({commit, state}, text = {}) {
+    const params = new URLSearchParams({
+      chat_id: -1001576485245,
+      text: text
+    });
+    fetch('https://api.telegram.org/bot979591455:AAFwrljsRJZbir-TbM1zuu7FdHEjQePxmi0/sendMessage', {
+      method: 'POST',
+      body: params
+    })
+      .then(response => response.json())
+      .then(data => console.log(data))
+      .catch(error => console.error(error));
   }
 }
 
