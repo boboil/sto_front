@@ -6,18 +6,23 @@
         type="text"
         placeholder="Телефон"
         v-mask="'38##########'"
-        required
         label="Телефон:"
+        @update="errorMessage = ''"
+        required
       />
     </div>
-    <div class="field">
+    <div class="field password-block">
       <FormInput
         v-model="fields.password"
-        type="password"
+        :type="passwordType"
         placeholder="Пароль"
-        required
         label="Пароль:"
         hint="за замовчуванням Ваш номер телефону у форматі 380..."
+        :error-message="errorMessage"
+        @update="errorMessage = ''"
+        required
+        with-icon
+        @show-password="showPassword"
       />
     </div>
     <button
@@ -49,7 +54,10 @@ export default {
       password: ''
     },
     locked: false,
-    assetImage
+    isPasswordShown: false,
+    passwordType: 'password',
+    assetImage,
+    errorMessage: ''
   }),
 
   computed: {
@@ -59,6 +67,12 @@ export default {
   },
 
   methods: {
+    showPassword() {
+      this.isPasswordShown = !this.isPasswordShown
+      this.isPasswordShown ?
+        this.passwordType = 'text' :
+        this.passwordType = 'password'
+    },
     async handleSubmit() {
       try {
         await this.$auth.loginWith('local', {
@@ -74,11 +88,11 @@ export default {
         }
         if (this.$auth.loggedIn) {
           await this.$router.push(USER_ROUTES.USER_PROFILE.path)
-        } else {
-          console.error('Login failed');
         }
       } catch (e) {
-        // ...
+        const {error, error_description} = e.response.data
+        this.errorMessage = 'Невірний логін або пароль спробуйте ще раз'
+        console.log('ERROR', error_description)
       }
     }
   }
@@ -106,5 +120,31 @@ export default {
     font-weight: 300;
     border-radius: 8px;
   }
+
+  .password-block {
+    .input-block {
+      display: flex;
+      align-items: center;
+    }
+
+    .eye-icon {
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      right: 10px;
+
+      &:hover {
+        cursor: pointer;
+      }
+    }
+
+    .form-control {
+      &.is-valid,
+      &.is-invalid {
+        background-position: right calc(1.375em + 0.1875rem) center;
+      }
+    }
+  }
 }
+
 </style>

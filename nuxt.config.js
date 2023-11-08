@@ -54,7 +54,7 @@ export default {
    */
   loading: {
     color: '#ffe400',
-    height: '2px'
+    height: '5px'
   },
   /*
    ** Auth settings
@@ -90,6 +90,9 @@ export default {
     '@nuxtjs/auth-next',
     '@nuxtjs/proxy'
   ],
+  bootstrapVue: {
+    icons: true
+  },
   axios: {
     baseURL: 'https://dev.sto.sumy.ua',
     proxy: true

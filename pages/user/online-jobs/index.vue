@@ -40,7 +40,7 @@
                       <div class="subtitle">№:</div>
                       <div class="value">{{ job.No }}</div>
                       <div class="subtitle">Статус:</div>
-                      <div :class="['value', job.color || 'blue']">{{ job.delivery }}</div>
+                      <div :class="['value', job.color || 'blue']">{{ handleDeliveryStatus(job.delivery) }}</div>
                     </NuxtLink>
                   </div>
                 </div>
@@ -70,7 +70,7 @@
                       <div class="subtitle">№:</div>
                       <div class="value">{{ job.No }}</div>
                       <div class="subtitle">Статус:</div>
-                      <div :class="['value', job.color || 'blue']">{{ job.delivery }}</div>
+                      <div :class="['value', job.color || 'blue']">{{ handleDeliveryStatus(job.delivery) }}</div>
                     </NuxtLink>
                   </div>
                 </div>
@@ -90,11 +90,12 @@
 import {mapGetters} from "vuex";
 import Header from '@/components/Common/Layout/Header'
 import {USER_ROUTES} from '@/constants'
+import {handleDelivery} from '@/helpers'
 
 export default {
   name: "OnlineJob",
   components: {Header},
-  async asyncData({store, params, route, $auth}) {
+  async asyncData({store}) {
     await store.dispatch('order/prepareDataForOnline')
     await store.dispatch('user/fetchCars')
   },
@@ -134,6 +135,10 @@ export default {
       this.filteredList = Object.values(this.onlineJobs).filter(act => {
         return act.CarName.includes(car.RegistrationNo)
       })
+    },
+    handleDeliveryStatus(deliveryStatus) {
+      const { delivery } = handleDelivery(deliveryStatus)
+      return delivery
     }
   },
   mounted() {

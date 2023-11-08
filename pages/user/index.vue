@@ -97,7 +97,6 @@ export default {
   },
   async asyncData({ store }) {
     await store.dispatch('user/fetchUser')
-    await store.dispatch('user/fetchHistoryList')
     await store.dispatch('user/fetchCars')
   },
   computed: {
@@ -107,7 +106,8 @@ export default {
     ...mapGetters({
       list: 'user/getHistoryList',
       user: 'user/getUser',
-      needToChange: 'user/getNeedToChangePassword'
+      needToChange: 'user/getNeedToChangePassword',
+      orders: 'order/getOrders'
     })
   },
 

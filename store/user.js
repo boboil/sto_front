@@ -153,7 +153,8 @@ export const actions = {
     const data = response.data
   },
   async fetchActs({commit, state}) {
-    const orders = state.historyList
+    const response = await this.$axios.get('/csws/cs/history/workorder')
+    const orders = await response.data
     const dataPromises = orders.map(async (order) => {
       const no = order.No.replace(/\d/g, '');
       if (no === 'W' && (order.DocCode === 'A' || order.DocCode === 'F')) {
@@ -166,19 +167,15 @@ export const actions = {
     const filteredData = data.filter((item) => item !== null)
     commit('setActsList', filteredData)
   },
-  async fetchRecommendations({commit, state}) {
-    const orders = state.historyList
-    const dataPromises = orders.map(async (order) => {
-      const no = order.No.replace(/\d/g, '');
-      if (no === 'W') {
-        const response = await this.$axios.get(`/csws/cs/history/${order.ID}/${order.RecType}`)
-        return response.data;
-      }
-      return null;
+  async fetchRecommendations({commit}) {
+    const response = await this.$axios.get('/csws/cs/history/workorder')
+    const orders = await response.data
+    const dataPromises = await orders.map(async (order) => {
+      const response = await this.$axios.get(`/csws/cs/history/${order.ID}/${order.RecType}`)
+      return response.data;
     });
     const data = await Promise.all(dataPromises);
-    const filteredData = data.filter((item) => item !== null)
-    commit('setRecommendationList', filteredData)
+    commit('setRecommendationList', data)
   },
   async fetchActDetail({commit, state}, param) {
     const response = await this.$axios.get(

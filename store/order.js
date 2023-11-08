@@ -2,6 +2,7 @@ import moment from "moment";
 import {formatDate} from '@/helpers'
 
 export const state = () => ({
+  orders: [],
   order: {},
   message: {},
   onlineJobs: [],
@@ -18,6 +19,9 @@ export const getters = {
   },
   getJobs(state) {
     return state.jobs
+  },
+  getOrders(state) {
+    return state.orders
   },
   getSingleJob(state) {
     return state.singleJob
@@ -129,7 +133,7 @@ export const getters = {
 
     executedWorks.forEach((work) => {
       allTickets.forEach((ticket) => {
-        const pos = work.Description.includes(ticket.Code);
+        const pos = work.Description ? work.Description.includes(ticket.Code) : false
 
         if (pos) {
           ticket.usage = true;
@@ -142,7 +146,7 @@ export const getters = {
 
     return allTickets
   },
-  getAllTalons({ allTalons }) {
+  getAllTalons({allTalons}) {
     return allTalons
   }
 }
@@ -168,6 +172,9 @@ export const mutations = {
   setSingleJob(state, singleJob) {
     state.singleJob = singleJob;
   },
+  setOrders(state, orders) {
+    state.orders = orders;
+  }
 };
 
 export const actions = {
@@ -178,25 +185,35 @@ export const actions = {
 
     }
   },
-  async prepareDataForOnline({commit, rootState}) {
-    const orders = rootState.user.historyList
-    const data = [];
+  async prepareDataForOnline({commit}) {
     try {
-      for (const order of orders) {
-        const no = order.No.replace(/\d/g, '');
+      const response = await this.$axios.get(`/csws/cs/history/order`)
+      const orders = response.data
+      const dataPromises = orders.map(async (order) => {
+        const no = order.No.replace(/\d/g, '')
         if (no === 'Z') {
-          const orderUrl = `/csws/cs/history/${order.ID}/${order.RecType}`;
-          const workResponse = await this.$axios.get(orderUrl);
-          const work = workResponse.data;
-          data.push(work);
+          const response = await this.$axios.get(`/csws/cs/history/${order.ID}/${order.RecType}`)
+          return response.data
         }
-      }
-      commit('setJobs', data);
+        return null
+      })
+      const data = await Promise.all(dataPromises);
+      const filteredData = data.filter((item) => item !== null)
+      commit('setJobs', filteredData);
     } catch (error) {
       console.error(error);
     }
   },
-  async fetchDataOneJob({commit}, {id,recType}) {
+  async fetchOrderHistory({commit}) {
+    try {
+      const response = await this.$axios.get(`/csws/cs/history/workorder`)
+      const data = response.data
+      commit('setOrders', data)
+    } catch (error) {
+      console.error(error);
+    }
+  },
+  async fetchDataOneJob({commit}, {id, recType}) {
     try {
       const orderUrl = `/csws/cs/history/${id}/${recType}`;
       const response = await this.$axios.get(orderUrl);
@@ -207,19 +224,15 @@ export const actions = {
     }
   },
   async fetchDataForTalons({commit, rootState}) {
-    const orders = rootState.user.historyList
-    const data = [];
+    const response = await this.$axios.get('/csws/cs/history/workorder')
+    const orders = await response.data
     try {
-      for (const order of orders) {
-        const no = order.No.replace(/\d/g, '');
-        if (no === 'W') {
-          const orderUrl = `/csws/cs/history/${order.ID}/${order.RecType}`;
-          const workResponse = await this.$axios.get(orderUrl);
-          const work = workResponse.data;
-          data.push(work);
-        }
-      }
-      commit('setTalons', data);
+      const dataPromises = orders.map(async (order) => {
+        const response = await this.$axios.get(`/csws/cs/history/${order.ID}/${order.RecType}`)
+        return response.data
+      })
+      const data = await Promise.all(dataPromises);
+      commit('setTalons', data)
     } catch (error) {
       console.error(error);
     }

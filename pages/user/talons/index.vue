@@ -24,7 +24,7 @@
                     <div class="subtitle"></div>
                     <div class="value">
                     <span class="d-flex align-items-center">
-                      <BIconPlusLg class="h3 pr-3"></BIconPlusLg>
+                      <BIconPlusLg class="h3 pr-3 plus-icon" />
                       Додати
                     </span>
                     </div>
@@ -138,6 +138,9 @@ export default {
   },
 };
 </script>
-<style scoped>
-/* Add your styles here */
+<style lang="scss" scoped>
+.plus-icon {
+  max-height: 28px;
+  max-width: 28px;
+}
 </style>

@@ -12,24 +12,34 @@
       </span>
       <small class="text-muted font-size-10">{{ hint }}</small>
     </template>
-    <b-form-input
-      :id="uid"
-      class="input"
-      :type="type"
-      :placeholder="placeholder"
-      :size="size"
-      :state="fieldState"
-      :required="required"
-      :pattern="pattern"
-      :disabled="disabled"
-      :min="min"
-      :max="max"
-      :step="step"
-      v-bind="$attrs"
-      @input="(v) => $emit('update', v)"
-      @blur="validate($event.target.value)"
-      v-on="$listeners"
-    ></b-form-input>
+    <div class="position-relative input-block">
+      <b-form-input
+        :id="uid"
+        class="input"
+        :type="type"
+        :placeholder="placeholder"
+        :size="size"
+        :state="fieldState"
+        :required="required"
+        :pattern="pattern"
+        :disabled="disabled"
+        :min="min"
+        :max="max"
+        :step="step"
+        v-bind="$attrs"
+        @input="(v) => $emit('update', v)"
+        @blur="validate($event.target.value)"
+        v-on="$listeners"
+      >
+      </b-form-input>
+      <b-icon
+        v-if="withIcon"
+        :icon="icon"
+        class="eye-icon"
+        @click="$emit('show-password')"
+      >
+      </b-icon>
+    </div>
   </b-form-group>
 </template>
 
@@ -127,6 +137,10 @@ export default {
     ariaDescription: {
       type: String,
       default: ''
+    },
+    withIcon: {
+      type: Boolean,
+      default: false
     }
   },
 
@@ -136,6 +150,11 @@ export default {
     defaultErrorMessage: 'Invalid value'
   }),
 
+  computed: {
+    icon() {
+      return this.type === 'password' ? 'eye' : 'eye-slash'
+    }
+  },
   watch: {
     errorMessage(val) {
       this.fieldState = !val

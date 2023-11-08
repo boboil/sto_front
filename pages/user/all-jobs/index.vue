@@ -20,8 +20,8 @@
                 </option>
               </select>
             </div>
-            <form class="search mt-3">
-              <input type="text" placeholder="Пошук...">
+            <form class="search mt-3" @submit.prevent="search">
+              <input v-model="fields.searchInput" @input="search" type="text" placeholder="Пошук...">
               <button type="submit"></button>
             </form>
           </div>
@@ -144,7 +144,10 @@ export default {
     return {
       filteredList: [],
       selectedCar: 0,
-      showAll: []
+      showAll: [],
+      fields: {
+        searchInput: ''
+      }
     }
   },
   computed: {
@@ -168,12 +171,12 @@ export default {
       return dividedActList(data, 'ID')
     },
     products() {
-      const data = this.jobs.flatMap(job => {
+      const data = this.filteredList.flatMap(job => {
         return job.products.map(product => {
           return {
             ...product,
             CarName: job.CarName,
-            RegistrationNo: job.CarName.split(' ')[0],
+            RegistrationNo: job.CarName ? job.CarName.split(' ')[0] : 'Інше авто',
             CarOdometer: job.CarOdometer,
             Date: moment(job.Date).format('dd-mm-YY'),
             Variant: 'W',
@@ -184,6 +187,21 @@ export default {
     },
   },
   methods: {
+    search() {
+      if (this.fields.searchInput.length <= 2) {
+        this.filteredList = this.jobs;
+      } else if (this.fields.searchInput.length > 2) {
+        console.log(this.fields.searchInput)
+        this.filteredList = this.jobs
+          .map(item => ({
+            ...item,
+            works: item.works.filter(work => work.Name.toLowerCase().includes(this.fields.searchInput.toLowerCase())),
+            products: item.products.filter(product => product.Name.toLowerCase().includes(this.fields.searchInput.toLowerCase()))
+          }))
+          .filter(item => item.works.length > 0 || item.products.length > 0);
+        console.log(this.filteredList)
+      }
+    },
     useTalon() {
 
     },

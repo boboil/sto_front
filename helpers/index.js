@@ -10,7 +10,7 @@ export const convertDateToFormat = (
 ) => {
   const dt = date.toISOString().split('T')[0]
   const [yyyy, mm, dd] = dt.split('-')
-  const params = { dd, mm, yyyy }
+  const params = {dd, mm, yyyy}
 
   return format
     .split(separator)
@@ -69,9 +69,41 @@ export const dividedActList = (list, param) => {
 
 export const formatDate = date => moment(date).format('DD-MM-YYYY');
 
-export const  formatDateForDiagnostic = (date) => {
+export const formatDateForDiagnostic = (date) => {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 }
 export const formatTime = (date) => {
   return `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+}
+
+
+export const handleDelivery = (deliveryStatus) => {
+  let delivery
+  let isButtonShown = false
+  switch (deliveryStatus) {
+    case 'Все_замовити':
+      delivery = 'Вже погоджено клієнтом'
+      break
+    case 'На_погодженні':
+      delivery = 'Натисніть для підтвердження замовлення'
+      isButtonShown = true
+      break;
+    case 'ОПРАЦЬОВАНО_СКЛАДОМ':
+    case 'Процінити':
+      delivery = 'Опрацьовуємо, трішки зачекайте'
+      break
+    case 'Очікуємо_на_склад':
+    case 'Частково_замовити':
+      delivery = 'Вже погоджено клієнтом'
+      break
+    case '':
+    case null:
+      delivery = 'Опрацьовуємо, трішки зачекайте'
+      break
+    case 'Відмовлено_клієнтом':
+      delivery = 'Скасовано клієнтом'
+      isButtonShown = true
+      break
+  }
+  return {delivery, isButtonShown}
 }

@@ -142,6 +142,7 @@ import moment from 'moment/moment'
 import Header from '@/components/Common/Layout/Header'
 import Comment from '@/components/Order/Comment'
 import Prepay from "@/components/Payment/Prepay"
+import {handleDelivery} from "~/helpers";
 
 export default {
   name: "SingleJob",
@@ -213,30 +214,9 @@ export default {
       this.fields.products = []
     },
     handleDeliveryStatus() {
-      switch (this.job.Delivery) {
-        case 'Все_замовити':
-          this.delivery = 'Вже погоджено клієнтом'
-          break
-        case 'На_погодженні':
-          this.delivery = 'Натисніть для підтвердження замовлення'
-          this.isButtonShown = true
-          break;
-        case 'ОПРАЦЬОВАНО_СКЛАДОМ':
-        case 'Процінити':
-          this.delivery = 'Опрацьовуємо, трішки зачекайте'
-          break
-        case 'Очікуємо_на_склад':
-        case 'Частково_замовити':
-          this.delivery = 'Вже погоджено клієнтом'
-          break
-        case '':
-          this.delivery = 'Опрацьовуємо, трішки зачекайте'
-          break
-        case 'Відмовлено_клієнтом':
-          this.delivery = 'Скасовано клієнтом'
-          this.isButtonShown = true
-          break
-      }
+      const {delivery, isButtonShown} = handleDelivery(this.job.Delivery)
+      this.delivery = delivery
+      this.isButtonShown = isButtonShown
     }
   }
 }
