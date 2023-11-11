@@ -96,11 +96,8 @@
           <button class="m-3" @click="logout">
             <b>Вийти</b>
           </button>
-          <button type="button" class="btn btn-info">
-            Оновити дані
-          </button>
           <a href="https://forms.gle/A5oMq9Hjt8AKcW7n6" class="btn btn-info mt-3">
-            Лишити відгук
+            Залишити відгук
           </a>
         </nav>
       </div>

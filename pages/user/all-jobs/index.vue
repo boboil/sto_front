@@ -14,7 +14,6 @@
           <div class="block-head-controls">
             <div class="type-selector">
               <select id="select_car" @change="filteredCars" v-model="selectedCar">
-                <option value="0">Усі машини</option>
                 <option :value="car.ID" v-for="car in cars">
                   {{ car.RegistrationNo }} &#x20;&#x20; {{ car.Brand }} {{ car.Model }}
                 </option>
@@ -41,19 +40,24 @@
             </div>
             <div class="table-body">
               <div
-                v-for="(data, key) in works"
+                v-for="(data, key) in combineProductsWorks"
                 class="work-item"
                 :class="showAll.includes(parseInt(key)) && 'open'"
+                :key="`combineProductsWorks_${key}`"
               >
                 <div class="work-item-content">
-                  <template v-for="(work, index) in data">
+                  <template v-for="(work, index) in isArrayReverce(data, key)">
                     <div class="work-date-distance"
                          :class="index === 0 && 'first-row'"
-                         :key="index"
+                         :key="`grouped_${index}`"
                     >
-                      <span class="blue">
+                      <span v-if="work.product" class="green">
+                        <b>Деталь</b>
+                        <b-icon icon="gear-wide-connected" class="icon"/>
+                      </span>
+                      <span v-else class="blue">
                         <b>Виконано</b>
-                        <i class="fas fa-tools"></i>
+                        <b-icon icon="tools" class="icon"/>
                       </span>
                       <span>
                       {{ work.Date }}
@@ -61,7 +65,6 @@
                       <span>
                       {{ work.CarOdometer }} км
                     </span>
-                      <span>{{ work.CarName }}</span>
                     </div>
                     <div class="work-name"
                          :class="index === 0 && 'first-row'"
@@ -75,46 +78,6 @@
                   </template>
                 </div>
                 <div class="work-item-progress">
-                  <!-- <span>Всего замен: </span> -->
-                  <b>{{ data.length }}</b>
-                </div>
-              </div>
-              <div
-                v-for="(data, key) in products"
-                class="work-item"
-                :class="showAll.includes(parseInt(key)) && 'open'"
-              >
-                <div class="work-item-content">
-                  <template v-for="(product, index) in data">
-                    <div class="work-date-distance"
-                         :class="index === 0 && 'first-row'"
-                         :key="index"
-                    >
-                      <span class="green">
-                        <b>Деталь</b>
-                        <i class="fa fa-cog" aria-hidden="true"></i>
-                      </span>
-                      <span>
-                      {{ product.Date }}
-                    </span>
-                      <span>
-                      {{ product.CarOdometer }} км
-                    </span>
-                      <span>{{ product.CarName }}</span>
-                    </div>
-                    <div class="work-name"
-                         :class="index === 0 && 'first-row'"
-                         v-show="index === 0"
-                    >
-                      {{ product.Name }}
-                      <button v-if="data.length > 1" @click="showFull(product.ID)">
-                        раніше
-                      </button>
-                    </div>
-                  </template>
-                </div>
-                <div class="work-item-progress">
-                  <!-- <span>Всего замен: </span> -->
                   <b>{{ data.length }}</b>
                 </div>
               </div>
@@ -127,15 +90,14 @@
 </template>
 
 <script>
-import Header from "~/components/Common/Layout/Header.vue";
-import {mapGetters} from "vuex";
-import moment from "moment";
-import {dividedActList} from "~/helpers";
+import {mapGetters} from "vuex"
+import Header from "@/components/Common/Layout/Header"
+import {dividedActList} from "@/helpers"
 
 export default {
   name: "allJobs",
   components: {Header},
-  async fetch({store, params, route, $auth}) {
+  async fetch({store}) {
     await store.dispatch('user/fetchHistoryList')
     await store.dispatch('user/fetchActs')
     await store.dispatch('user/fetchCars')
@@ -156,58 +118,86 @@ export default {
       jobs: 'user/getAllJobsList'
     }),
     works() {
-      const data = this.filteredList.flatMap(job => {
+      return this.filteredList.flatMap(job => {
         return job.works.map(work => {
           return {
             ...work,
             CarName: job.CarName,
             RegistrationNo: job.CarName ? job.CarName.split(' ')[0] : 'Інше авто',
             CarOdometer: job.CarOdometer,
-            Date: moment(job.Date).format('dd-mm-YY'),
             Variant: 'W',
           }
         })
       })
-      return dividedActList(data, 'ID')
     },
     products() {
-      const data = this.filteredList.flatMap(job => {
+      return this.filteredList.flatMap(job => {
         return job.products.map(product => {
           return {
             ...product,
             CarName: job.CarName,
             RegistrationNo: job.CarName ? job.CarName.split(' ')[0] : 'Інше авто',
             CarOdometer: job.CarOdometer,
-            Date: moment(job.Date).format('dd-mm-YY'),
             Variant: 'W',
           }
         })
       })
-      return dividedActList(data, 'ID')
     },
+    combineProductsWorks() {
+      const combine = this.filteredList.flatMap(job => {
+        return [
+          ...job.works.map(
+            work => ({
+              ...work,
+              work: true,
+              product: false,
+              CarID: job.CarID,
+              CarOdometer: job.CarOdometer,
+              Variant: 'W'
+            })),
+          ...job.products.map(
+            product => ({
+              ...product,
+              product: true,
+              work: false,
+              CarID: job.CarID,
+              CarOdometer: job.CarOdometer,
+              Variant: 'W'
+            }))
+        ]
+      })
+      return dividedActList(combine, 'ID')
+    }
   },
   methods: {
+    isArrayReverce(data) {
+      const sorted = data.sort((a, b) => {
+        const dateA = a.Date.split('/').reverse().join('/')
+        const dateB = b.Date.split('/').reverse().join('/')
+        return new Date(dateB) - new Date(dateA);
+      })
+      console.log(sorted)
+      return sorted
+    },
     search() {
-      if (this.fields.searchInput.length <= 2) {
-        this.filteredList = this.jobs;
-      } else if (this.fields.searchInput.length > 2) {
-        console.log(this.fields.searchInput)
-        this.filteredList = this.jobs
+      if (this.fields.searchInput.length <= 1) {
+        this.filteredCars()
+      } else if (this.fields.searchInput.length > 1) {
+        this.filteredList = this.filteredList
           .map(item => ({
             ...item,
             works: item.works.filter(work => work.Name.toLowerCase().includes(this.fields.searchInput.toLowerCase())),
             products: item.products.filter(product => product.Name.toLowerCase().includes(this.fields.searchInput.toLowerCase()))
           }))
-          .filter(item => item.works.length > 0 || item.products.length > 0);
-        console.log(this.filteredList)
+          .filter(item => (item.works.length > 0 || item.products.length > 0) && item.CarID && item.CarID === this.selectedCar)
       }
-    },
-    useTalon() {
-
     },
     showFull(id) {
       if (!this.showAll.includes(id)) {
-        this.showAll.push(id)
+        this.showAll.unshift(id)
+      } else if (this.showAll.includes(id)) {
+        const index = this.showAll.indexOf(5)
+        this.showAll.splice(index, 1)
       }
     },
     filteredCars() {
@@ -215,27 +205,45 @@ export default {
         this.filteredList = this.jobs
         return
       }
-      const car = this.cars.find(car => car.ID === this.selectedCar)
-      this.filteredList = this.jobs.filter(act => {
-        if (car.RegistrationNo === null) {
+      this.filteredList = this.jobs.filter(job => {
+        if (this.selectedCar === null) {
           return false
         }
-        return act.CarName && act.CarName.includes(car.RegistrationNo)
+        return job.CarID && job.CarID === this.selectedCar
       })
     }
   },
   created() {
     this.filteredList = this.jobs
+    this.selectedCar = this.cars[this.cars.length-1].ID
+    this.filteredCars()
   }
 }
 </script>
 
 <style lang="scss" scoped>
+.text-align-right {
+  text-align: right !important;
+}
 .all-works-table {
   .table-head {
+    position: sticky;
+    top: 130px;
+    justify-content: space-between;
+    display: flex;
     padding-right: 68px;
-    display: grid;
-    grid-template-columns: 3fr 2fr;
+    @media screen and (max-width: 768px) {
+      padding-right: 15px;
+    }
+  }
+
+  .icon {
+    width: 16px;
+    height: 16px;
+  }
+
+  .head-column {
+    font-weight: 600;
   }
 }
 </style>

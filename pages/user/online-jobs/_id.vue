@@ -5,7 +5,7 @@
       <section class="block-one-act online-job">
         <div class="wrap">
           <h1 class="block-title">
-            № {{ job.No }} від {{ moment(job.Date).format('DD-MM-YYYY') }}
+            № {{ job.No }} від {{ moment(job.Date).format('DD/MM/YYYY') }}
           </h1>
           <button
             type="button"
@@ -181,7 +181,7 @@ export default {
       return this.job.Products.filter((item) => item.Group !== 'НЕ_відображати_в_кабінеті')
         .map((item) => ({
           ...item,
-          Date: moment(this.job.Date).format('DD-MM-YYYY'),
+          Date: moment(this.job.Date).format('DD/MM/YYYY'),
         }))
     },
     disabled() {

@@ -35,19 +35,19 @@ export const getters = {
       if (prWork.StatusCode !== 'A') {
         const works = prWork.Works.map((item) => ({
           ...item,
-          Date: moment(prWork.Date).format('DD-MM-YYYY'),
+          Date: moment(prWork.Date).format('DD/MM/YYYY'),
         }))
 
         const products = prWork.Products.filter((item) => item.Group !== 'НЕ_відображати_в_кабінеті')
           .map((item) => ({
             ...item,
-            Date: moment(prWork.Date).format('DD-MM-YYYY'),
+            Date: moment(prWork.Date).format('DD/MM/YYYY'),
           }))
 
         onlineJobs[prWork.ID] = {
           works,
           products,
-          date: moment(prWork.Date).format('DD-MM-YYYY'),
+          date: moment(prWork.Date).format('DD/MM/YYYY'),
           year: moment(prWork.Date).format('YYYY'),
           CarOdometer: prWork.CarOdometer,
           CarName: prWork.CarName,
@@ -71,19 +71,19 @@ export const getters = {
       if (prWork.Delivery === 'Відмовлено_клієнтом' && prWork.StatusCode === 'A') {
         const works = prWork.Works.map((item) => ({
           ...item,
-          Date: moment(prWork.Date).format('DD-MM-YYYY'),
+          Date: moment(prWork.Date).format('DD/MM/YYYY'),
         }))
 
         const products = prWork.Products.filter((item) => item.Group !== 'НЕ_відображати_в_кабінеті')
           .map((item) => ({
             ...item,
-            Date: moment(prWork.Date).format('DD-MM-YYYY'),
+            Date: moment(prWork.Date).format('DD/MM/YYYY'),
           }))
 
         cancelJobs[prWork.ID] = {
           works,
           products,
-          date: moment(prWork.Date).format('DD-MM-YYYY'),
+          date: moment(prWork.Date).format('DD/MM/YYYY'),
           year: moment(prWork.Date).format('YYYY'),
           CarOdometer: prWork.CarOdometer,
           CarName: prWork.CarName,
@@ -137,7 +137,7 @@ export const getters = {
 
         if (pos) {
           ticket.usage = true;
-          ticket.DateUsage = moment(work.Date).format("DD-MM-YYYY");
+          ticket.DateUsage = moment(work.Date).format("DD/MM/YYYY");
           ticket.usedCount += work.Quantity;
           ticket.unusedCount -= work.Quantity;
         }

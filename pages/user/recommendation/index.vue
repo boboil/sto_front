@@ -7,10 +7,11 @@
           <h1 class="block-title">
             Рекомендації
           </h1>
+          <span v-html="`На цій сторінці зібрані наші побажання та  виявленні дефекти авто`"/>
           <div class="block-head-controls">
             <div class="type-selector">
               <select id="select_car" @change="filteredCars" v-model="selectedCar">
-                <option value="0">Усі машини</option>
+                <option value="0">Усі авто</option>
                 <option :value="car.ID" v-for="car in cars">
                   {{ car.RegistrationNo }} &#x20;&#x20; {{ car.Brand }} {{ car.Model }}
                 </option>
@@ -38,7 +39,7 @@
                         <span>{{ recommendation.CarOdometer }} км</span>
                         <span>{{ recommendation.CarName }}</span>
                       </div>
-                      <div class="work-name first-row">
+                      <div class="work-name first-row font-size-14">
                         {{ works.Name }}
                         <template v-if="works.Notes">
                           <br>Примітка:
@@ -110,7 +111,7 @@ export default {
           return true
         }
         return obj.products.some(product => {
-          const productDate = new Date(product.Date.split('-').reverse().join('-'))
+          const productDate = new Date(product.Date.split('/').reverse().join('/'))
           return productDate >= threeMonthsAgo
         });
       })

@@ -57,7 +57,7 @@ export const reversedKeys = (actsList) => {
 }
 
 export const dividedActList = (list, param) => {
-  return list.reduce((acc, item) => {
+  const divided = list.reduce((acc, item) => {
     const divider = item[param]
     if (!acc[divider]) {
       acc[divider] = []
@@ -65,9 +65,15 @@ export const dividedActList = (list, param) => {
     acc[divider].push(item)
     return acc
   }, {});
-}
 
-export const formatDate = date => moment(date).format('DD-MM-YYYY');
+  Object.keys(divided).forEach(key => {
+    divided[key].sort((a, b) => new Date(a.Date) - new Date(b.Date));
+  });
+
+  return divided;
+};
+
+export const formatDate = date => moment(date).format('DD/MM/YYYY');
 
 export const formatDateForDiagnostic = (date) => {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;

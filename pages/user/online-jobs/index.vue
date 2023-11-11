@@ -5,12 +5,12 @@
       <section class="block-work-acts">
         <div class="wrap">
           <h1 class="block-title">
-            Зараз в роботі
+            Замовлення
           </h1>
           <div class="block-head-controls">
             <div class="type-selector">
               <select id="select_car" @change="filteredCars" v-model="selectedCar">
-                <option value="0">Усі машини</option>
+                <option value="0">Усі авто</option>
                 <option :value="car.ID" v-for="car in cars">
                   {{ car.RegistrationNo }} &#x20;&#x20; {{ car.Brand }} {{ car.Model }}
                 </option>

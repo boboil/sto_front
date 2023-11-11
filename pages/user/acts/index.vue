@@ -14,7 +14,7 @@
             </form> -->
             <div class="type-selector">
               <select id="select_car" @change="filteredCars" v-model="selectedCar">
-                <option value="0">Усі машини</option>
+                <option value="0">Усі авто</option>
                 <option :value="car.ID" v-for="car in cars">
                   {{ car.RegistrationNo }} &#x20;&#x20; {{ car.Brand }} {{ car.Model }}
                 </option>
@@ -34,8 +34,8 @@
                       :to="`${USER_ROUTES.USER_ACTS.path}/${act.ID}`"
                       :key="index"
                     >
-                      <div class="subtitle status" v-if="act.StatusCode === 'Попередній'">
-                        <b>Попередній</b>
+                      <div class="subtitle status" v-if="act.StatusCode === 'A'">
+                        <b class="red">Попередній</b>
                       </div>
                       <div class="value"></div>
                       <div class="subtitle">

@@ -31,42 +31,36 @@ export const getters = {
     return getters.convertData(state.actsList)
   },
   convertData: () => (prWorks) => {
-    const data = [];
-    prWorks.forEach(prWork => {
-      const works = prWork.Works.filter(
-        item => item.Group === 'Выполнено' && item.WorkerName !== '1Дефектовано!'
-      );
+    return prWorks.reduce((data, prWork) => {
+      const formattedDate = moment(prWork.Date).format('DD/MM/YYYY');
 
-      const products = prWork.Products.map(item => ({
-        ...item,
-        Date: moment(prWork.Date).format('DD-MM-YYYY'),
+      const works = prWork.Works.filter(({ Group, WorkerName }) =>
+        Group === 'Выполнено' && WorkerName !== '1Дефектовано!'
+      ).map(work => ({
+        ...work,
+        Date: formattedDate,
       }));
 
-      const {
-        ID: prWorkId,
-        CarOdometer,
-        CarName,
-        No: actId,
-        RecType,
-        StatusCode,
-        Date: prWorkDate,
-      } = prWork;
+      const products = prWork.Products.map(product => ({
+        ...product,
+        Date: formattedDate,
+      }));
 
-      data[prWorkId] = {
+      data[prWork.ID] = {
         works,
         products,
-        date: moment(prWorkDate).format('dd-mm-YYYY'),
-        year: moment(prWorkDate).format('YYYY'),
-        CarOdometer,
-        CarName,
-        orderId: prWorkId,
-        actId,
-        RecType,
-        status: StatusCode === 'A' ? 'Попередній' : '',
+        date: formattedDate,
+        year: moment(prWork.Date).format('YYYY'),
+        CarOdometer: prWork.CarOdometer,
+        CarID: prWork.CarID,
+        CarName: prWork.CarName,
+        orderId: prWork.ID,
+        actId: prWork.No,
+        RecType: prWork.RecType,
+        status: prWork.StatusCode === 'A' ? 'Попередній' : '',
       };
-    });
-
-    return data;
+      return data;
+    }, []);
   },
   getRecommendationList(state, getters) {
     return getters.convertRecommendationData(state.recommendationList)
@@ -79,18 +73,18 @@ export const getters = {
           item.Group !== 'Наряд-заказ'
       ).map(item => ({
         ...item,
-        Date: moment(prWork.Date).format('DD-MM-YYYY'),
+        Date: moment(prWork.Date).format('DD/MM/YYYY'),
       }));
 
       const products = prWork.Products.map(item => ({
         ...item,
-        Date: moment(prWork.Date).format('DD-MM-YYYY'),
+        Date: moment(prWork.Date).format('DD/MM/YYYY'),
       }));
 
       return {
         works,
         products,
-        date: moment(prWork.Date).format('DD-MM-YYYY'),
+        date: moment(prWork.Date).format('DD/MM/YYYY'),
         year: moment(prWork.Date).format('YYYY'),
         CarOdometer: prWork.CarOdometer,
         CarName: prWork.CarName,

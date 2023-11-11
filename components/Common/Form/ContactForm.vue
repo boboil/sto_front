@@ -47,10 +47,13 @@ export default {
   },
   methods: {
     async handleSubmit() {
-      const phone = this.user.Phone || this.fields.phone;
-      const name = this.user.Name || 'Клиент не авторизован';
-      const message = `Телефон: ${phone}\\\n Имя: ${name}\\\n Вопрос: ${this.fields.question}`
-      await this.$store.dispatch('user/sendMessageToManager', message)
+      console.log(this.$auth.user)
+      const phone = this.$auth.user.Phone || this.fields.phone;
+      const name = this.$auth.user.Name || 'Клиент не авторизован';
+      let message = `Телефон: ${phone}\n`
+      message += `Имя: ${name}\n`
+      message += `Вопрос: ${this.fields.question}`
+      await this.$store.dispatch('user/sendTgMessage', message)
       await this.closeModal()
     },
     closeModal() {

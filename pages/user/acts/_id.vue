@@ -5,7 +5,7 @@
       <section class="block-one-act">
         <div class="wrap">
           <h1 class="block-title">
-            АКТ №{{ act.No }} від {{ moment(act.Date).format('DD-MM-YYYY') }}
+            АКТ №{{ act.No }} від {{ moment(act.Date).format('DD/MM/YYYY') }}
           </h1>
           <button type="button" class="btn btn-info" id="prePayButton" v-if="act.IsPaid === 'N'">
             Оплатити акт
@@ -38,7 +38,6 @@
                 <thead>
                 <tr>
                   <th>
-                    <!--Название-->
                   </th>
                 </tr>
                 </thead>
@@ -146,13 +145,13 @@
 
           <div class="act-category" v-if="recommendations.length">
             <div class="act-category-title blue">
-              Ось що ще хотілось додати:
+              Зверніть увагу:
             </div>
             <div class="act-category-content">
               <table class="act-category-table">
                 <thead>
                 <tr>
-                  <th>Назва</th>
+<!--                  <th>Назва</th>-->
                 </tr>
                 </thead>
                 <tbody>
@@ -219,11 +218,15 @@ export default {
       return totalWork + totalProduct
     },
     clientReasons() {
+      const workNotes = this.act.WorkNotes.Reason
       return this.act.Works.filter(item => item.ID === 1967)
-        .map(item => ({
-          ...item,
-          Notes: item.Notes + '<br/>' + this.act.WorkNotes.Reason,
-        }));
+        .map(item => {
+          const notes = item.Notes ? item.Notes + '<br/>' : ''
+          return {
+            ...item,
+            Notes: workNotes ? notes + workNotes : notes
+          }
+        })
     },
     works() {
       return this.act.Works.filter(item =>
@@ -257,7 +260,6 @@ export default {
   methods: {
     nextAct() {
       const currentIndex = this.actsList.findIndex(item => this.act.ID === item.ID)
-      console.log(currentIndex)
       if (currentIndex >= 0 && currentIndex < this.actsList.length - 1) {
         return this.$router.push(`${USER_ROUTES.USER_ACTS.path}/${this.actsList[currentIndex + 1].ID}`)
       }
