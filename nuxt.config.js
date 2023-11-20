@@ -32,7 +32,8 @@ export default {
     { src: '~/plugins/axios.js', mode: 'client' },
     { src: '~/plugins/moment.js', mode: 'client' },
     { src: '~plugins/v-mask.js', mode: 'client' },
-    '~/plugins/auth-interceptor.js'
+    '~/plugins/auth-interceptor.js',
+    '~/plugins/vue-swal.js'
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components

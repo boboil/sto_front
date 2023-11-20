@@ -1,4 +1,4 @@
-
+import Swal from 'sweetalert2';
 
 export const state = () => ({
 
@@ -13,7 +13,12 @@ export const mutations = {
 
 export const actions = {
   async useTalon({commit}, params) {
-    await this.$axios.post('https://api.sto.sumy.ua/api/api-user-talon', params)
+    const resp = await this.$axios.post('https://api.sto.sumy.ua/api/api-user-talon', params)
+    await Swal.fire({
+      title: 'Дякуємо!',
+      text: resp.data.message,
+      icon: 'success'
+    })
   }
 }
 

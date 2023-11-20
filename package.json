@@ -20,6 +20,7 @@
     "vue": "^2.7.10",
     "vue-server-renderer": "^2.7.10",
     "vue-swal": "^1.0.0",
+    "vue-sweetalert2": "^5.0.5",
     "vue-template-compiler": "^2.7.10",
     "vuex-cache": "^3.5.0"
   },
