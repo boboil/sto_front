@@ -8,10 +8,6 @@
             Акти виконаних робіт
           </h1>
           <div class="block-head-controls">
-            <!-- <form class="search">
-                <input type="text" placeholder="Поиск...">
-                <button type="submit"></button>
-            </form> -->
             <div class="type-selector">
               <select id="select_car" @change="filteredCars" v-model="selectedCar">
                 <option value="0">Усі авто</option>
@@ -60,7 +56,7 @@
                         Авто:
                       </div>
                       <div class="value">
-                        {{ act.CarName }}
+                        {{ act.CarName || 'Інше авто' }}
                       </div>
                     </NuxtLink>
                   </div>
@@ -86,8 +82,7 @@ import {convertDateToFormat, reversedKeys} from '@/helpers'
 export default {
   name: "Acts",
   components: {Header},
-  async fetch({store, params, route, $auth}) {
-    await store.dispatch('user/fetchHistoryList')
+  async fetch({store}) {
     await store.dispatch('user/fetchActs')
     await store.dispatch('user/fetchCars')
   },

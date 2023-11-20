@@ -19,6 +19,7 @@
     "v-mask": "^2.3.0",
     "vue": "^2.7.10",
     "vue-server-renderer": "^2.7.10",
+    "vue-swal": "^1.0.0",
     "vue-template-compiler": "^2.7.10",
     "vuex-cache": "^3.5.0"
   },

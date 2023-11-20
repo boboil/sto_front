@@ -5,7 +5,7 @@ import {
 
 export const convertDateToFormat = (
   date = new Date(),
-  format = 'mm/dd/yyyy',
+  format = 'dd/mm/yyyy',
   separator = '/'
 ) => {
   const dt = date.toISOString().split('T')[0]
@@ -20,7 +20,7 @@ export const convertDateToFormat = (
 
 export const convertDateTimeToFormat = (
   date = new Date(),
-  format = 'h:m mm/dd/yyyy'
+  format = 'h:m dd/mm/yyyy'
 ) => {
   const [dt, tm] = date.toISOString().split('T')
   const [yyyy, mm, dd] = dt.split('-')

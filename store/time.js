@@ -60,7 +60,7 @@ export const actions = {
   },
   async fetchCalendarTime({commit}, day) {
     const response = await this.$axios.get(
-      `https://cabinet.sto.sumy.ua/api/google-available-time/${day}`
+      `https://api.sto.sumy.ua/api/google-available-time/${day}`
     )
     const data = await response.data
     commit('setTimeList', data)

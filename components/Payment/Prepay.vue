@@ -7,8 +7,8 @@
           type="number"
           class="form-control"
           step="0.1"
+          placeholder="сума"
           required
-          :disabled="prepay"
         />
         <div class="input-group-prepend">
           <div class="input-group-text">грн</div>
@@ -44,7 +44,7 @@ export default {
   data() {
     return {
       fields: {
-        prePaySum: 0,
+        prePaySum: null,
         orderId: null
       }
     }

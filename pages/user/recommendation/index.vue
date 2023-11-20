@@ -69,7 +69,6 @@ export default {
   name: "Recommendations",
   components: {Header},
   async asyncData({store}) {
-    await store.dispatch('user/fetchHistoryList')
     await store.dispatch('user/fetchRecommendations')
     await store.dispatch('user/fetchCars')
   },

@@ -90,7 +90,6 @@
         type="checkbox"
         id="transfer"
         class="btn-check"
-        @change="transferAvto"
       />
       <label class="btn btn-secondary transfer" for="transfer">Хочу трансфер до СТО</label>
       <input
@@ -117,13 +116,15 @@
           {{ availableTime }}
         </option>
       </select>
-      <label for="question">Опишіть коротко свою причину звернення, а бо що не так з авто:)</label>
-      <textarea
-        v-model="fields.question"
-        class="form-control"
-        name="question"
-        rows="3"
-      ></textarea>
+      <template v-if="fields.reason !== 'camberToe'">
+        <label for="question">Опишіть коротко свою причину звернення, а бо що не так з авто:)</label>
+        <textarea
+          v-model="fields.question"
+          class="form-control"
+          name="question"
+          rows="3"
+        ></textarea>
+      </template>
     </div>
     <ModalPopupFooter
       :disabled-submit="locked || !isValid"
@@ -193,14 +194,28 @@ export default {
     transferAvto() {
       // Add your logic for transferring the car here
     },
-    submitForm() {
+    async submitForm() {
       const data = {
         user: this.user,
         fields: this.fields,
         reason: this.diagnosticName,
         selectedCar: this.selectedCar
       }
-      this.$store.dispatch('order/createDiagnosticOrder', data)
+      await this.$store.dispatch('order/createDiagnosticOrder', data)
+      this.resetForm()
+      this.closeModal()
+    },
+    resetForm() {
+      this.fields = {
+        reason: 'placeholder',
+          selectedCar: '',
+          selectedTime: '',
+          diagnosticDay: null,
+          transfer: '',
+          question: '',
+          another_address: '',
+          another_car: ''
+      }
     },
     closeModal() {
       const {modalId} = this.$attrs

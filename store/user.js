@@ -34,7 +34,7 @@ export const getters = {
     return prWorks.reduce((data, prWork) => {
       const formattedDate = moment(prWork.Date).format('DD/MM/YYYY');
 
-      const works = prWork.Works.filter(({ Group, WorkerName }) =>
+      const works = prWork.Works.filter(({Group, WorkerName}) =>
         Group === 'Выполнено' && WorkerName !== '1Дефектовано!'
       ).map(work => ({
         ...work,
@@ -125,8 +125,18 @@ export const mutations = {
 export const actions = {
   async fetchHistoryList({commit}) {
     const response = await this.$axios.get('/csws/cs/history')
-    const data = await response.data
-    commit('setHistoryList', data)
+    const orders = await response.data
+    const dataPromises = orders.map(async (order) => {
+      if (order.DocCode === 'A' || order.DocCode === 'F') {
+        const response = await this.$axios.get(`/csws/cs/history/${order.ID}/${order.RecType}`)
+        return response.data;
+      }
+      return null;
+    });
+    const data = await Promise.all(dataPromises);
+    const filteredData = data.filter((item) => item !== null)
+    commit('setActsList', filteredData)
+    commit('setHistoryList', orders)
   },
   async fetchCars({commit}) {
     const response = await this.$axios.get('/csws/cs/usercars')
@@ -149,16 +159,7 @@ export const actions = {
   async fetchActs({commit, state}) {
     const response = await this.$axios.get('/csws/cs/history/workorder')
     const orders = await response.data
-    const dataPromises = orders.map(async (order) => {
-      const no = order.No.replace(/\d/g, '');
-      if (no === 'W' && (order.DocCode === 'A' || order.DocCode === 'F')) {
-        const response = await this.$axios.get(`/csws/cs/history/${order.ID}/${order.RecType}`)
-        return response.data;
-      }
-      return null;
-    });
-    const data = await Promise.all(dataPromises);
-    const filteredData = data.filter((item) => item !== null)
+    const filteredData = orders.filter((order) => order.DocCode === 'A' || order.DocCode === 'F')
     commit('setActsList', filteredData)
   },
   async fetchRecommendations({commit}) {

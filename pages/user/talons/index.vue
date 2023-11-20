@@ -18,8 +18,9 @@
               <div class="work-acts-year-title">Є в гаманці</div>
               <div class="work-acts-year-list">
                 <div class="list-inner">
-                  <NuxtLink :to="buyTalonRoute"
-                     class="act-item d-flex align-items-center justify-content-center a5eca5"
+                  <NuxtLink
+                    :to="buyTalonRoute"
+                    class="act-item d-flex align-items-center justify-content-center a5eca5"
                   >
                     <div class="subtitle"></div>
                     <div class="value">
@@ -132,8 +133,12 @@ export default {
       const parsedDate = new Date(date);
       return `${parsedDate.getDate()}-${parsedDate.getMonth() + 1}-${parsedDate.getFullYear()}`;
     },
-    useTalon(ticket) {
-      // Add your logic to use talon here
+    async useTalon(ticket) {
+      const params = {
+        user: this.$auth.user,
+        name: ticket.Name
+      }
+      await this.$store.dispatch('talons/useTalon', params)
     },
   },
 };

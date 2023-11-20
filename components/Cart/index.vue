@@ -85,31 +85,13 @@ export default {
     updateCartItem(itemId, quantity) {
       this.$store.commit('cart/updateCartItem', {itemId, quantity})
     },
-    submitOrder() {
-        const payment = {
-          action: 'pay',
-          amount: '10',
-          currency: 'USD',
-          description: 'Sample payment',
-          order_id: '1',
-          version: '3',
-          public_key: this.$liqpay.publicKey,
-        };
+    async submitOrder() {
+      const params = {
+        products: this.cartItems,
+        user: this.$auth.user
+      };
 
-        const signature = LiqPay.base64_encode(LiqPay.sha1(this.$liqpay.privateKey + LiqPay.base64_encode(JSON.stringify(payment)) + this.$liqpay.privateKey));
-
-        LiqPayCheckout.init({
-          data: LiqPay.base64_encode(JSON.stringify(payment)),
-          signature,
-          embedTo: '#liqpay-container',
-          mode: 'embed', // or 'popup'
-        }).on('liqpay.callback', (data) => {
-          // handle successful payment
-        }).on('liqpay.ready', (data) => {
-          // handle LiqPay widget is ready
-        }).on('liqpay.close', (data) => {
-          // handle LiqPay widget is closed
-        });
+      await this.$store.dispatch('order/createOrder', params)
     }
   },
 };

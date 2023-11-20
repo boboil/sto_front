@@ -1,4 +1,7 @@
 export default {
+  // serverMiddleware: [
+  //   { path: '/liqpay/success', handler: '~/middleware/payment.js' },
+  // ],
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
     title: 'Gold Auto',
@@ -106,14 +109,14 @@ export default {
         'Access-Control-Allow-Origin': '*'
       }
     },
-    '/api': {
-      target: 'https://cabinet.sto.sumy.ua/api',
-      changeOrigin: true,
-      pathRewrite: { '^/api': '/' },
-      headers: {
-        'Access-Control-Allow-Origin': '*'
-      }
-    },
+    // '/api': {
+    //   target: 'https://api.sto.sumy.ua/api',
+    //   changeOrigin: true,
+    //   pathRewrite: { '^/api': '/' },
+    //   headers: {
+    //     'Access-Control-Allow-Origin': '*'
+    //   }
+    // },
   },
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {

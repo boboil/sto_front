@@ -1,4 +1,4 @@
-import moment from "moment";
+import moment from 'moment'
 import {formatDate} from '@/helpers'
 
 export const state = () => ({
@@ -92,7 +92,7 @@ export const getters = {
           No: prWork.No.replace(/[a-z]/gi, ''),
           RecType: prWork.RecType,
           status: prWork.StatusCode,
-          delivery: 'Відмовлено клієнтом'
+          delivery: prWork.Delivery
         }
       }
     })
@@ -180,7 +180,7 @@ export const mutations = {
 export const actions = {
   async createDiagnosticOrder({commit, dispatch}, data = {}) {
     try {
-      await this.$axios.post('/api/add-diagnostic-order', data)
+      await this.$axios.post('https://api.sto.sumy.ua/api/add-diagnostic-order', data)
     } catch (e) {
 
     }
@@ -242,9 +242,22 @@ export const actions = {
     const talons = workResponse.data;
     commit('setAllTalons', talons);
   },
-  async createPrepay({commit, dispatch}, prams = {}) {
+  async createPrepay({commit, dispatch}, params = {}) {
     try {
-      const response = await this.$axios.post('/api/pre-pay', prams)
+      const response = await this.$axios.post(
+        'https://api.sto.sumy.ua/api/pre-pay', params
+      )
+      const data = response.data
+      window.location.href = data.url;
+    } catch (e) {
+
+    }
+  },
+  async createOrder({commit, dispatch}, params = {}) {
+    try {
+      const response = await this.$axios.post(
+        'https://api.sto.sumy.ua/api/create-order', params
+      )
       const data = response.data
       window.location.href = data.url;
     } catch (e) {

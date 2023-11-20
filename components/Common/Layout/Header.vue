@@ -48,6 +48,7 @@
             type="button"
             data-toggle="modal"
             class="btn btn-warning"
+            @click="diagnosticModalShow = !diagnosticModalShow"
           >
             Записатись
           </button>
@@ -113,6 +114,12 @@
           v-bind="data"
         />
       </ModalPopup>
+      <ModalPopup :is-open.sync="diagnosticModalShow" title="Онлайн запис!">
+        <DiagnosticForm
+          slot-scope="data"
+          v-bind="data"
+        />
+      </ModalPopup>
     </div>
   </div>
 </template>
@@ -135,7 +142,8 @@ export default {
     return {
       showMenu: false,
       prepayModalShow: false,
-      contactModalShow: false
+      contactModalShow: false,
+      diagnosticModalShow: false
     }
   },
   computed: {

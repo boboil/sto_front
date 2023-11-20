@@ -99,7 +99,6 @@ export default {
   components: {Header},
   async fetch({store}) {
     await store.dispatch('user/fetchHistoryList')
-    await store.dispatch('user/fetchActs')
     await store.dispatch('user/fetchCars')
   },
   data() {
