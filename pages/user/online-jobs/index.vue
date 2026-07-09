@@ -52,7 +52,7 @@
             <div class="work-acts-year">
               <template v-if="!cancelJobsNotEmpty">
                 <div class="work-acts-year-title">
-                  Скасовані
+                  Пройдені
                 </div>
                 <div class="work-acts-year-list">
                   <div class="list-inner">
@@ -77,9 +77,9 @@
               </template>
             </div>
           </div>
-          <button type="button" class="btn btn-info mt-4" @click="$router.push(USER_ROUTES.USER_TALONS.path)">
-            Хочете знижки на популярні послуги, тисніть!
-          </button>
+<!--          <button type="button" class="btn btn-info mt-4" @click="$router.push(USER_ROUTES.USER_TALONS.path)">-->
+<!--            Хочете знижки на популярні послуги, тисніть!-->
+<!--          </button>-->
         </div>
       </section>
     </main>

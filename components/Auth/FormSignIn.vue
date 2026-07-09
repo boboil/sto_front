@@ -4,9 +4,11 @@
       <FormInput
         v-model="fields.username"
         type="text"
-        placeholder="Телефон"
+        placeholder="Телефон (напр. 0501234567)"
         required
         label="Телефон:"
+        :has-custom-error="!!phoneError"
+        :error-message="phoneError"
       />
     </div>
     <div class="field">
@@ -52,9 +54,20 @@ export default {
   }),
 
   computed: {
+    normalizedPhone() {
+      const digits = this.fields.username.replace(/\D/g, '')
+      if (/^0\d{9}$/.test(digits)) return `38${digits}`
+      if (/^80\d{9}$/.test(digits)) return `3${digits}`
+      if (/^380\d{9}$/.test(digits)) return digits
+      return ''
+    },
+    phoneError() {
+      if (!this.fields.username || this.normalizedPhone) return ''
+      return 'Введіть український номер телефону, напр. 0501234567 або +380501234567'
+    },
     isValid() {
-      const {username, password} = this.fields
-      return username && password && username.length > 2 && password.length > 2
+      const {password} = this.fields
+      return !!this.normalizedPhone && password && password.length > 2
     }
   },
 
@@ -72,7 +85,7 @@ export default {
               Accept: '*/*'
             },
             data: {
-              username: this.fields.username,
+              username: this.normalizedPhone,
               password: this.fields.password,
               grant_type: 'password'
             },

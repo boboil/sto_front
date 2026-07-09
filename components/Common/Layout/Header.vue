@@ -48,19 +48,19 @@
         >
           Записатись
         </button>
-        <NuxtLink
-          :to="USER_ROUTES.USER_TALONS.path"
-          type="button"
-          class="nav-btn auth-button"
-        >
-          Мій гаманець послуг
-        </NuxtLink>
+<!--        <NuxtLink-->
+<!--          :to="USER_ROUTES.USER_TALONS.path"-->
+<!--          type="button"-->
+<!--          class="nav-btn auth-button"-->
+<!--        >-->
+<!--          Мій гаманець послуг-->
+<!--        </NuxtLink>-->
         <NuxtLink
           :to="USER_ROUTES.USER_ONLINE_JOBS.path"
           type="button"
           class="nav-btn auth-button"
         >
-          Мої замовлення
+          Мої звернення
         </NuxtLink>
         <NuxtLink
           :to="USER_ROUTES.USER_RECOMMENDATION.path"

@@ -98,18 +98,20 @@ export default {
   ],
   proxy: {
     '/csws': {
-      target: 'http://95.217.38.198/csws',
-      changeOrigin: true,
-      pathRewrite: { '^/csws': '/' },
-      headers: {
-        'Access-Control-Allow-Origin': 'http://localhost:3000'
-      }
+      target: process.env.API_ENDPOINT,
+      changeOrigin: true
     },
   },
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
-    extend(config, ctx) {},
+    extend(config, ctx) {
+      config.module.rules.push({
+        test: /\.ico$/i,
+        loader: 'url-loader',
+        options: { limit: 1000, esModule: false }
+      })
+    },
     transpile: [
       'defu'
     ]

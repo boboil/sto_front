@@ -1,3 +1,4 @@
+@charset "UTF-8";
 /* Slider */
 .slick-slider {
   position: relative;
@@ -86,7 +87,6 @@
 .slick-arrow.slick-hidden {
   display: none; }
 
-@charset "UTF-8";
 /*!Ion.RangeSlider, 2.3.1, © Denis Ineshin, 2010 - 2019, IonDen.com, Build date: 2019-12-19 16:51:02*/
 .irs {
   position: relative;

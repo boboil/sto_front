@@ -26,14 +26,11 @@
         </div>
         <div class="mb-4 mt-4 telegram-connect-block">
           <div class="links-block justify-content-between mt-4">
-            <a href="tel:+380662050303">066 205 03 03 - Олександр</a>
-            <a href="https://t.me/+380662050303" target="_blank">
-              <img :src="assetImage('telegram')" alt="telegram" width="32px">
-            </a>
+            <a href="tel:+3800507003005">050 700 300 5</a>
           </div>
           <div class="links-block justify-content-between mt-4">
-            <a href="tel:+380990206700">099 02 06 700 - Дмитро</a>
-            <a href="https://t.me/+380990206700" target="_blank">
+            <a href="tel:+3800675468823">067 546 882 3</a>
+            <a href="https://t.me/+3800675468823" target="_blank">
               <img :src="assetImage('telegram')" alt="telegram" width="32px">
             </a>
           </div>

@@ -26,7 +26,7 @@
             type="button"
             class="nav-btn auth-button"
           >
-            Мої замовлення
+            Мої звернення
           </NuxtLink>
           <NuxtLink
             :to="USER_ROUTES.USER_RECOMMENDATION.path"
@@ -51,12 +51,13 @@
           </NuxtLink>
           <div class="mb-2 mt-2 telegram-connect-block">
             <div class="links-block justify-content-start">
-              <a href="tel:+380662050303" class="pl-2">066 205 03 03 - Олександр</a>
-              <a href="https://t.me/+380662050303" target="_blank"><i class="fab fa-telegram fa-2x ml-2"></i></a>
+              <a href="tel:+3800507003005">050 700 300 5</a>
             </div>
-            <div class="links-block justify-content-start">
-              <a href="tel:+380990206700" class="pl-2">099 02 06 700 - Дмитро</a>
-              <a href="https://t.me/+380990206700" target="_blank"><i class="fab fa-telegram fa-2x ml-2"></i></a>
+            <div class="links-block justify-content-between">
+              <a href="tel:+3800675468823" class="pl-2">067 546 882 3</a>
+              <a href="https://t.me/+3800675468823" target="_blank">
+                <img :src="assetImage('telegram')" alt="telegram" width="32px">
+              </a>
             </div>
           </div>
           <div class="phone-main">
@@ -80,6 +81,7 @@ import {USER_ROUTES} from '~/constants'
 import Header from "@/components/Common/Layout/Header";
 import ModalPopup from "@/components/ModalPopup";
 import DiagnosticForm from "@/components/Diagnostic/DiagnosticForm";
+import {assetImage} from "~/helpers";
 
 export default {
   name: "index",
@@ -104,6 +106,7 @@ export default {
     })
   },
   methods: {
+    assetImage,
     async getActs() {
       await this.$store.dispatch('user/fetchActs', this.list)
     }
