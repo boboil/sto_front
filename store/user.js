@@ -7,10 +7,14 @@ export const state = () => ({
   act: {},
   cars: [],
   recommendationList: [],
-  user: {}
+  user: {},
+  needToChangePassword: false
 })
 
 export const getters = {
+  getNeedToChangePassword({needToChangePassword}) {
+    return needToChangePassword
+  },
   getHistoryList(state, getters) {
     return state.historyList
   },
@@ -27,42 +31,36 @@ export const getters = {
     return getters.convertData(state.actsList)
   },
   convertData: () => (prWorks) => {
-    const data = [];
-    prWorks.forEach(prWork => {
-      const works = prWork.Works.filter(
-        item => item.Group === 'Выполнено' && item.WorkerName !== '1Дефектовано!'
-      );
+    return prWorks.reduce((data, prWork) => {
+      const formattedDate = moment(prWork.Date).format('DD/MM/YYYY');
 
-      const products = prWork.Products.map(item => ({
-        ...item,
-        Date: moment(prWork.Date).format('DD-MM-YYYY'),
+      const works = prWork.Works.filter(({Group, WorkerName}) =>
+        Group === 'Выполнено' && WorkerName !== '1Дефектовано!'
+      ).map(work => ({
+        ...work,
+        Date: formattedDate,
       }));
 
-      const {
-        ID: prWorkId,
-        CarOdometer,
-        CarName,
-        No: actId,
-        RecType,
-        StatusCode,
-        Date: prWorkDate,
-      } = prWork;
+      const products = prWork.Products.map(product => ({
+        ...product,
+        Date: formattedDate,
+      }));
 
-      data[prWorkId] = {
+      data[prWork.ID] = {
         works,
         products,
-        date: moment(prWorkDate).format('dd-mm-YYYY'),
-        year: moment(prWorkDate).format('YYYY'),
-        CarOdometer,
-        CarName,
-        orderId: prWorkId,
-        actId,
-        RecType,
-        status: StatusCode === 'A' ? 'Попередній' : '',
+        date: formattedDate,
+        year: moment(prWork.Date).format('YYYY'),
+        CarOdometer: prWork.CarOdometer,
+        CarID: prWork.CarID,
+        CarName: prWork.CarName,
+        orderId: prWork.ID,
+        actId: prWork.No,
+        RecType: prWork.RecType,
+        status: prWork.StatusCode === 'A' ? 'Попередній' : '',
       };
-    });
-
-    return data;
+      return data;
+    }, []);
   },
   getRecommendationList(state, getters) {
     return getters.convertRecommendationData(state.recommendationList)
@@ -75,18 +73,18 @@ export const getters = {
           item.Group !== 'Наряд-заказ'
       ).map(item => ({
         ...item,
-        Date: moment(prWork.Date).format('DD-MM-YYYY'),
+        Date: moment(prWork.Date).format('DD/MM/YYYY'),
       }));
 
       const products = prWork.Products.map(item => ({
         ...item,
-        Date: moment(prWork.Date).format('DD-MM-YYYY'),
+        Date: moment(prWork.Date).format('DD/MM/YYYY'),
       }));
 
       return {
         works,
         products,
-        date: moment(prWork.Date).format('DD-MM-YYYY'),
+        date: moment(prWork.Date).format('DD/MM/YYYY'),
         year: moment(prWork.Date).format('YYYY'),
         CarOdometer: prWork.CarOdometer,
         CarName: prWork.CarName,
@@ -118,14 +116,27 @@ export const mutations = {
   },
   setUser(state, user = {}) {
     state.user = user
+  },
+  setNeedToChangePassword(state, isNeedChange = false) {
+    state.needToChangePassword = isNeedChange
   }
 }
 
 export const actions = {
   async fetchHistoryList({commit}) {
     const response = await this.$axios.get('/csws/cs/history')
-    const data = await response.data
-    commit('setHistoryList', data)
+    const orders = await response.data
+    const dataPromises = orders.map(async (order) => {
+      if (order.DocCode === 'A' || order.DocCode === 'F') {
+        const response = await this.$axios.get(`/csws/cs/history/${order.ID}/${order.RecType}`)
+        return response.data;
+      }
+      return null;
+    });
+    const data = await Promise.all(dataPromises);
+    const filteredData = data.filter((item) => item !== null)
+    commit('setActsList', filteredData)
+    commit('setHistoryList', orders)
   },
   async fetchCars({commit}) {
     const response = await this.$axios.get('/csws/cs/usercars')
@@ -138,32 +149,28 @@ export const actions = {
     await this.$auth.setUser(data)
     commit('setUser', data)
   },
-  async fetchActs({commit, state}, orders) {
-    const dataPromises = orders.map(async (order) => {
-      const no = order.No.replace(/\d/g, '');
-      if (no === 'W' && (order.DocCode === 'A' || order.DocCode === 'F')) {
-        const response = await this.$axios.get(`/csws/cs/history/${order.ID}/${order.RecType}`)
-        return response.data;
-      }
-      return null;
-    });
-    const data = await Promise.all(dataPromises);
-    const filteredData = data.filter((item) => item !== null)
+  changeNeedToChangePassword({commit}, isNeedChange) {
+    commit('setNeedToChangePassword', isNeedChange)
+  },
+  async changePassword({commit}, params) {
+    const response = await this.$axios.post('/csws/cs/changepassword', params)
+    const data = response.data
+  },
+  async fetchActs({commit, state}) {
+    const response = await this.$axios.get('/csws/cs/history/workorder')
+    const orders = await response.data
+    const filteredData = orders.filter((order) => order.DocCode === 'A' || order.DocCode === 'F')
     commit('setActsList', filteredData)
   },
-  async fetchRecommendations({commit, state}) {
-    const orders = state.historyList
-    const dataPromises = orders.map(async (order) => {
-      const no = order.No.replace(/\d/g, '');
-      if (no === 'W') {
-        const response = await this.$axios.get(`/csws/cs/history/${order.ID}/${order.RecType}`)
-        return response.data;
-      }
-      return null;
+  async fetchRecommendations({commit}) {
+    const response = await this.$axios.get('/csws/cs/history/workorder')
+    const orders = await response.data
+    const dataPromises = await orders.map(async (order) => {
+      const response = await this.$axios.get(`/csws/cs/history/${order.ID}/${order.RecType}`)
+      return response.data;
     });
     const data = await Promise.all(dataPromises);
-    const filteredData = data.filter((item) => item !== null)
-    commit('setRecommendationList', filteredData)
+    commit('setRecommendationList', data)
   },
   async fetchActDetail({commit, state}, param) {
     const response = await this.$axios.get(
@@ -171,6 +178,28 @@ export const actions = {
     )
     const act = await response.data
     commit('setActDetail', act)
+  },
+  async sendMessageToManager({commit, state}, message = {}) {
+    try {
+      const response = await this.$axios.post('/api/manager-connect',
+        {message})
+      const data = response.data
+    } catch (e) {
+
+    }
+  },
+  async sendTgMessage({commit, state}, text = {}) {
+    const params = new URLSearchParams({
+      chat_id: -1001576485245,
+      text: text
+    });
+    fetch('https://api.telegram.org/bot979591455:AAFwrljsRJZbir-TbM1zuu7FdHEjQePxmi0/sendMessage', {
+      method: 'POST',
+      body: params
+    })
+      .then(response => response.json())
+      .then(data => console.log(data))
+      .catch(error => console.error(error));
   }
 }
 

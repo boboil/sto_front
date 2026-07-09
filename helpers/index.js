@@ -1,25 +1,16 @@
-import { get } from 'lodash'
-import moment from 'moment';
+import moment from 'moment'
 import {
   AUTH_ROUTES,
 } from '@/constants'
 
-export const asyncTimeout = (ms = 1000) => {
-  return new Promise((resolve) => setTimeout(resolve, ms))
-}
-export const formatter = new Intl.NumberFormat('en-US', {
-  style: 'currency',
-  currency: 'USD'
-})
-
 export const convertDateToFormat = (
   date = new Date(),
-  format = 'mm/dd/yyyy',
+  format = 'dd/mm/yyyy',
   separator = '/'
 ) => {
   const dt = date.toISOString().split('T')[0]
   const [yyyy, mm, dd] = dt.split('-')
-  const params = { dd, mm, yyyy }
+  const params = {dd, mm, yyyy}
 
   return format
     .split(separator)
@@ -29,29 +20,13 @@ export const convertDateToFormat = (
 
 export const convertDateTimeToFormat = (
   date = new Date(),
-  format = 'h:m mm/dd/yyyy'
+  format = 'h:m dd/mm/yyyy'
 ) => {
   const [dt, tm] = date.toISOString().split('T')
   const [yyyy, mm, dd] = dt.split('-')
   const [h, m] = tm.split(':')
 
   return `${h}:${m} ${mm}/${dd}/${yyyy}`
-}
-
-export const convertDateTimeAmPmToFormat = (
-  date = new Date(),
-  isHtml = '',
-  format = 'h:m mm/dd/yyyy'
-) => {
-  const space = isHtml === 'html' ? '&nbsp' : ' '
-  const [dt, tm] = date.toISOString().split('T')
-  const [yyyy, mm, dd] = dt.split('-')
-  const [h, m] = tm.split(':')
-  const ampm = h >= 12 ? 'pm' : 'am'
-  let hours = h % 12
-  hours = hours || 12 // the hour '0' should be '12'
-
-  return `${mm}/${dd}/${yyyy} ${hours}:${m}${space}${ampm}`
 }
 export const genRandomUID = (prefix = 'UID', len = 7) => {
   return `${prefix}_${Math.random()
@@ -82,7 +57,7 @@ export const reversedKeys = (actsList) => {
 }
 
 export const dividedActList = (list, param) => {
-  return list.reduce((acc, item) => {
+  const divided = list.reduce((acc, item) => {
     const divider = item[param]
     if (!acc[divider]) {
       acc[divider] = []
@@ -90,6 +65,51 @@ export const dividedActList = (list, param) => {
     acc[divider].push(item)
     return acc
   }, {});
+
+  Object.keys(divided).forEach(key => {
+    divided[key].sort((a, b) => new Date(a.Date) - new Date(b.Date));
+  });
+
+  return divided;
+};
+
+export const formatDate = date => moment(date).format('DD/MM/YYYY');
+
+export const formatDateForDiagnostic = (date) => {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+}
+export const formatTime = (date) => {
+  return `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
 }
 
-export const formatDate = date => moment(date).format('DD-MM-YYYY');
+
+export const handleDelivery = (deliveryStatus) => {
+  let delivery
+  let isButtonShown = false
+  switch (deliveryStatus) {
+    case 'Все_замовити':
+      delivery = 'Вже погоджено клієнтом'
+      break
+    case 'На_погодженні':
+      delivery = 'Натисніть для підтвердження замовлення'
+      isButtonShown = true
+      break;
+    case 'ОПРАЦЬОВАНО_СКЛАДОМ':
+    case 'Процінити':
+      delivery = 'Опрацьовуємо, трішки зачекайте'
+      break
+    case 'Очікуємо_на_склад':
+    case 'Частково_замовити':
+      delivery = 'Вже погоджено клієнтом'
+      break
+    case '':
+    case null:
+      delivery = 'Опрацьовуємо, трішки зачекайте'
+      break
+    case 'Відмовлено_клієнтом':
+      delivery = 'Скасовано клієнтом'
+      isButtonShown = true
+      break
+  }
+  return {delivery, isButtonShown}
+}

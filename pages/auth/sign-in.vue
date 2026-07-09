@@ -20,21 +20,21 @@
           Зареєструватись
         </NuxtLink>
         <div class="manager-feedback">
-          <button class="nav-btn" type="button" data-toggle="modal" data-target="#diagnosticModal">
+          <button
+            class="nav-btn"
+            type="button"
+            @click="diagnosticModalShow = !diagnosticModalShow"
+          >
             Записатися на розвал-сходження
           </button>
         </div>
-        <div class="mb-4 mt-4 telegram-connect-block">
-          <div class="links-block justify-content-between mt-4">
-            <a href="tel:+3800507003005">050 700 300 5</a>
-          </div>
-          <div class="links-block justify-content-between mt-4">
-            <a href="tel:+3800675468823">067 546 882 3</a>
-            <a href="https://t.me/+3800675468823" target="_blank">
-              <img :src="assetImage('telegram')" alt="telegram" width="32px">
-            </a>
-          </div>
-        </div>
+        <FooterContact />
+        <ModalPopup :is-open.sync="diagnosticModalShow" title="Онлайн запис!">
+          <GuestDiagnostic
+            slot-scope="data"
+            v-bind="data"
+          />
+        </ModalPopup>
       </div>
 
     </section>
@@ -44,21 +44,23 @@
 <script>
 import AuthFormSignIn from '@/components/Auth/FormSignIn'
 import { assetImage } from '@/helpers'
-import { AUTH_ROUTES } from "@/constants";
+import { AUTH_ROUTES } from "@/constants"
+import FooterContact from '@/components/Common/Form/FooterContact'
+import GuestDiagnostic from '@/components/Diagnostic/GuestDiagnostic'
 
 export default {
   name: 'SignIn',
+  layout: 'auth',
+  components: {GuestDiagnostic, FooterContact, AuthFormSignIn },
+  data: () => ({
+    assetImage,
+    showLogin: false,
+    diagnosticModalShow: false
+  }),
   computed: {
     AUTH_ROUTES() {
       return AUTH_ROUTES
     }
   },
-  data: () => ({
-    assetImage,
-    showLogin: false
-  }),
-  layout: 'auth',
-
-  components: { AuthFormSignIn }
 }
 </script>

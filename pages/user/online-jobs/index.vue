@@ -1,16 +1,16 @@
 <template>
   <div>
-    <Header />
+    <Header/>
     <main id="acts_works">
       <section class="block-work-acts">
         <div class="wrap">
           <h1 class="block-title">
-            Зараз в роботі
+            Замовлення
           </h1>
           <div class="block-head-controls">
             <div class="type-selector">
               <select id="select_car" @change="filteredCars" v-model="selectedCar">
-                <option value="0">Усі машини</option>
+                <option value="0">Усі авто</option>
                 <option :value="car.ID" v-for="car in cars">
                   {{ car.RegistrationNo }} &#x20;&#x20; {{ car.Brand }} {{ car.Model }}
                 </option>
@@ -26,12 +26,12 @@
                 </div>
                 <div class="work-acts-year-list">
                   <div class="list-inner">
-                    <a
-                      v-for="job in onloneJobs"
+                    <NuxtLink
+                      v-for="job in filteredList"
                       :key="job.orderId"
-                      :href="`online.job/${job.orderId}/${job.RecType}`"
+                      :to="`online-jobs/${job.orderId}?recType=${job.RecType}`"
                       class="act-item active"
-                    >
+                     >
                       <div class="subtitle"></div>
                       <div class="subtitle">Авто:</div>
                       <div class="value">{{ job.CarName }}</div>
@@ -40,8 +40,8 @@
                       <div class="subtitle">№:</div>
                       <div class="value">{{ job.No }}</div>
                       <div class="subtitle">Статус:</div>
-                      <div :class="['value', job.color || 'blue']">{{ job.delivery }}</div>
-                    </a>
+                      <div :class="['value', job.color || 'blue']">{{ handleDeliveryStatus(job.delivery) }}</div>
+                    </NuxtLink>
                   </div>
                 </div>
               </template>
@@ -56,10 +56,10 @@
                 </div>
                 <div class="work-acts-year-list">
                   <div class="list-inner">
-                    <a
+                    <NuxtLink
                       v-for="job in cancelJobs"
                       :key="job.orderId"
-                      :href="`online.job/${job.orderId}/${job.RecType}`"
+                      :to="`online-jobs/${job.orderId}?recType=${job.RecType}`"
                       class="act-item canceled"
                     >
                       <div class="subtitle"></div>
@@ -70,8 +70,8 @@
                       <div class="subtitle">№:</div>
                       <div class="value">{{ job.No }}</div>
                       <div class="subtitle">Статус:</div>
-                      <div :class="['value', job.color || 'blue']">{{ job.delivery }}</div>
-                    </a>
+                      <div :class="['value', job.color || 'blue']">{{ handleDeliveryStatus(job.delivery) }}</div>
+                    </NuxtLink>
                   </div>
                 </div>
               </template>
@@ -87,20 +87,19 @@
 </template>
 
 <script>
-import Header from "~/components/Common/Layout/Header.vue";
 import {mapGetters} from "vuex";
-import {USER_ROUTES} from "~/constants";
+import Header from '@/components/Common/Layout/Header'
+import {USER_ROUTES} from '@/constants'
+import {handleDelivery} from '@/helpers'
 
 export default {
-  name: "Talons",
+  name: "OnlineJob",
   components: {Header},
-  async fetch({store, params, route, $auth}) {
-    await Promise.all([
-      store.dispatch('order/prepareDataForOnline'),
-      store.dispatch('user/fetchCars')
-    ])
+  async asyncData({store}) {
+    await store.dispatch('order/prepareDataForOnline')
+    await store.dispatch('user/fetchCars')
   },
-  data(){
+  data() {
     return {
       filteredList: [],
       selectedCar: 0,
@@ -112,20 +111,20 @@ export default {
       return USER_ROUTES
     },
     ...mapGetters({
-      onlineJobs: 'order/getOnlineJobs',
       cancelJobs: 'order/getCancelJobs',
+      onlineJobs: 'order/getOnlineJobs',
       cars: 'user/getCars'
     }),
     jobsNotEmpty() {
-      return this.onlineJobs.length > 0;
+      return Object.values(this.onlineJobs).length > 0
     },
     cancelJobsNotEmpty() {
-      return this.cancelJobs.length > 0;
+      return this.cancelJobs.length > 0
     },
   },
   methods: {
-    useTalon() {
-
+    initFilter() {
+      this.filteredList = Object.values(this.onlineJobs)
     },
     filteredCars() {
       if (parseInt(this.selectedCar) === 0) {
@@ -133,14 +132,17 @@ export default {
         return
       }
       const car = this.cars.find(car => car.ID === this.selectedCar)
-      this.filteredList = this.onlineJobs.filter(act => {
-        return act.CarName.includes(car.RegistrationNo);
+      this.filteredList = Object.values(this.onlineJobs).filter(act => {
+        return act.CarName.includes(car.RegistrationNo)
       })
+    },
+    handleDeliveryStatus(deliveryStatus) {
+      const { delivery } = handleDelivery(deliveryStatus)
+      return delivery
     }
   },
-  created() {
-    this.filteredList = this.onlineJobs
-    console.log(this.cancelJobs)
+  mounted() {
+    this.initFilter()
   }
 }
 </script>

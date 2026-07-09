@@ -18,72 +18,74 @@
               <div class="work-acts-year-title">Є в гаманці</div>
               <div class="work-acts-year-list">
                 <div class="list-inner">
-                  <NuxtLink :to="buyTalonRoute"
-                     class="act-item d-flex align-items-center justify-content-center a5eca5"
+                  <NuxtLink
+                    :to="buyTalonRoute"
+                    class="act-item d-flex align-items-center justify-content-center a5eca5"
                   >
                     <div class="subtitle"></div>
                     <div class="value">
                     <span class="d-flex align-items-center">
-                      <BIconPlusLg class="h3 pr-3"></BIconPlusLg>
+                      <BIconPlusLg class="h3 pr-3 plus-icon"/>
                       Додати
                     </span>
                     </div>
                     <div class="value"></div>
                   </NuxtLink>
-                  <a
-                    v-for="(ticket, index) in availableTickets"
-                    :key="index"
-                    href="#"
-                    class="act-item"
-                  >
-                    <div class="subtitle"></div>
-                    <div class="value"></div>
-                    <div class="value">{{ ticket.Name }}</div>
-                    <div class="subtitle">Дата:</div>
-                    <div class="value">{{ formatDate(ticket.Date) }}</div>
-                    <div class="value mt-3 text-center">
-                      <button
-                        type="button"
-                        :data-id="ticket.ID"
-                        :data-name="ticket.Name"
-                        class="btn btn-info"
-                        @click="useTalon(ticket)"
-                      >
-                        Використати
-                      </button>
-                    </div>
-                  </a>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="work-acts-chronology">
-            <div class="work-acts-year">
-              <div class="work-acts-year-title">Використані</div>
-              <div class="work-acts-year-list">
-                <div class="list-inner">
-                  <template v-if="usedTickets.length > 0">
-                    <a
-                      v-for="(ticket, index) in usedTickets"
-                      :key="index"
-                      href="#"
+                  <template v-for="ticket in availableTickets" >
+                    <div
+                      v-for="n in ticket.unusedCount"
+                      :key="n"
                       class="act-item"
                     >
-                      <div class="subtitle">
-                        <b class="red">Використано</b>
-                      </div>
+                      <div class="subtitle"></div>
                       <div class="value"></div>
                       <div class="value">{{ ticket.Name }}</div>
                       <div class="subtitle">Дата:</div>
-                      <div class="value">{{ ticket.DateUsage }}</div>
-                    </a>
-                  </template>
-                  <a v-else href="#"
-                     class="act-item d-flex align-items-center justify-content-center d8e2d8">
-                    <div class="value">
-                      <span class="d-flex align-items-center">Немає використаних</span>
+                      <div class="value">{{ moment(ticket.Date).format("DD/MM/YYYY") }}</div>
+                      <div class="value mt-3 text-center">
+                        <button
+                          type="button"
+                          :data-id="ticket.ID"
+                          :data-name="ticket.Name"
+                          class="btn btn-info"
+                          @click="useTalon(ticket)"
+                        >
+                          Використати
+                        </button>
+                      </div>
                     </div>
-                  </a>
+                  </template>
+                </div>
+              </div>
+            </div>
+            <div class="work-acts-chronology">
+              <div class="work-acts-year">
+                <div class="work-acts-year-title">Використані</div>
+                <div class="work-acts-year-list">
+                  <div class="list-inner">
+                    <template v-if="usedTickets.length > 0">
+                      <a
+                        v-for="(ticket, index) in usedTickets"
+                        :key="index"
+                        href="#"
+                        class="act-item"
+                      >
+                        <div class="subtitle">
+                          <b class="red">Використано</b>
+                        </div>
+                        <div class="value"></div>
+                        <div class="value">{{ ticket.Name }}</div>
+                        <div class="subtitle">Дата:</div>
+                        <div class="value">{{ ticket.DateUsage }}</div>
+                      </a>
+                    </template>
+                    <a v-else href="#"
+                       class="act-item d-flex align-items-center justify-content-center d8e2d8">
+                      <div class="value">
+                        <span class="d-flex align-items-center">Немає використаних</span>
+                      </div>
+                    </a>
+                  </div>
                 </div>
               </div>
             </div>
@@ -97,6 +99,7 @@
 import Header from "~/components/Common/Layout/Header";
 import {BIconPlusLg} from 'bootstrap-vue'
 import {mapGetters} from "vuex";
+import moment from "moment/moment";
 
 export default {
   name: "Talons",
@@ -104,7 +107,7 @@ export default {
     BIconPlusLg,
     Header
   },
-  async fetch({store, params, route, $auth}) {
+  async fetch({ store }) {
     await Promise.all([
       store.dispatch('order/fetchDataForTalons'),
       store.dispatch('user/fetchCars')
@@ -116,28 +119,34 @@ export default {
     };
   },
   computed: {
+    moment() {
+      return moment
+    },
     ...mapGetters({
       allTickets: 'order/getTalons',
       cars: 'user/getCars'
     }),
     availableTickets() {
-      return this.allTickets.filter((ticket) => ticket.unusedCount > 0);
+      return this.allTickets.filter((ticket) => ticket.unusedCount > 0)
     },
     usedTickets() {
-      return this.allTickets.filter((ticket) => ticket.usedCount > 0);
+      return this.allTickets.filter((ticket) => ticket.usedCount > 0)
     },
   },
   methods: {
-    formatDate(date) {
-      const parsedDate = new Date(date);
-      return `${parsedDate.getDate()}-${parsedDate.getMonth() + 1}-${parsedDate.getFullYear()}`;
-    },
-    useTalon(ticket) {
-      // Add your logic to use talon here
+    async useTalon(ticket) {
+      const params = {
+        user: this.$auth.user,
+        name: ticket.Name
+      }
+      await this.$store.dispatch('talons/useTalon', params)
     },
   },
 };
 </script>
-<style scoped>
-/* Add your styles here */
+<style lang="scss" scoped>
+.plus-icon {
+  max-height: 28px;
+  max-width: 28px;
+}
 </style>

@@ -7,10 +7,11 @@
           <h1 class="block-title">
             Рекомендації
           </h1>
+          <span v-html="`На цій сторінці зібрані наші побажання та  виявленні дефекти авто`"/>
           <div class="block-head-controls">
             <div class="type-selector">
               <select id="select_car" @change="filteredCars" v-model="selectedCar">
-                <option value="0">Усі машини</option>
+                <option value="0">Усі авто</option>
                 <option :value="car.ID" v-for="car in cars">
                   {{ car.RegistrationNo }} &#x20;&#x20; {{ car.Brand }} {{ car.Model }}
                 </option>
@@ -31,22 +32,27 @@
             <div class="table-body">
               <div class="work-item">
                 <div class="work-item-content">
-                  <template v-for="(recommendation, index) in filteredList">
-                    <div class="work-date-distance first-row" :key="index">
-                      <b>{{ recommendation.Date }}</b>
-                      <span>{{ recommendation.CarOdometer }} км</span>
-                      <span>{{ recommendation.CarName }}</span>
-                    </div>
-                    <div class="work-name first-row" v-for="works in recommendation.works">
-                      {{ works.Name }}
-                      <template v-if="works.Notes">
-                        <br>Примітка:
-                        <small>{{works.Notes}}</small>
-                      </template>
-                    </div>
+                  <template v-for="recommendation in filteredList">
+                    <template v-for="works in recommendation.works">
+                      <div class="work-date-distance first-row" :key="works.actId">
+                        <b>{{ recommendation.date }}</b>
+                        <span>{{ recommendation.CarOdometer }} км</span>
+                        <span>{{ recommendation.CarName }}</span>
+                      </div>
+                      <div class="work-name first-row font-size-14">
+                        {{ works.Name }}
+                        <template v-if="works.Notes">
+                          <br>Примітка:
+                          <small>{{ works.Notes }}</small>
+                        </template>
+                      </div>
+                    </template>
                   </template>
                 </div>
               </div>
+              <button v-if="!isShowAllRec" type="button" class="btn btn-info show-more" @click="showAllRec">
+                Показати всі
+              </button>
             </div>
           </div>
         </div>
@@ -56,23 +62,22 @@
 </template>
 
 <script>
-import Header from "~/components/Common/Layout/Header";
-import {mapGetters} from "vuex";
+import {mapGetters} from 'vuex'
+import Header from '@/components/Common/Layout/Header'
 
 export default {
   name: "Recommendations",
   components: {Header},
-  async fetch({store, params, route, $auth}) {
-    await Promise.all([
-      store.dispatch('user/fetchRecommendations'),
-      store.dispatch('user/fetchCars')
-    ])
+  async asyncData({store}) {
+    await store.dispatch('user/fetchRecommendations')
+    await store.dispatch('user/fetchCars')
   },
   data() {
     return {
       filteredList: [],
       selectedCar: 0,
-      showAll: []
+      showAll: [],
+      isShowAllRec: false
     }
   },
   computed: {
@@ -82,8 +87,33 @@ export default {
     }),
   },
   methods: {
-    useTalon() {
+    showAllRec() {
+      this.isShowAllRec = !this.isShowAllRec
+      this.filteredList = this.recommendations
+    },
+    filterRecentEvents(dataObjects) {
+      const threeMonthsAgo = new Date();
+      threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
 
+      return dataObjects.filter(obj => {
+        const rootDate = new Date(obj.date.split('-').reverse().join('-'))
+
+        if (rootDate >= threeMonthsAgo) {
+          return true
+        }
+        const recentWorks = obj.works.some(work => {
+          const workDate = new Date(work.Date.split('-').reverse().join('-'))
+          return workDate >= threeMonthsAgo;
+        });
+
+        if (recentWorks) {
+          return true
+        }
+        return obj.products.some(product => {
+          const productDate = new Date(product.Date.split('/').reverse().join('/'))
+          return productDate >= threeMonthsAgo
+        });
+      })
     },
     filteredCars() {
       if (parseInt(this.selectedCar) === 0) {
@@ -92,16 +122,25 @@ export default {
       }
       const car = this.cars.find(car => car.ID === this.selectedCar)
       this.filteredList = this.recommendations.filter(act => {
-        return act.CarName.includes(car.RegistrationNo);
+        if (car.RegistrationNo === null) {
+          return false
+        }
+        return act.CarName && act.CarName.includes(car.RegistrationNo)
       })
     }
   },
   created() {
-    this.filteredList = this.recommendations
+    this.filteredList = this.filterRecentEvents(this.recommendations)
   }
 }
 </script>
 
 <style scoped>
+.work-item {
+  display: flex;
 
+  .work-date-distance {
+    padding-right: 10px;
+  }
+}
 </style>

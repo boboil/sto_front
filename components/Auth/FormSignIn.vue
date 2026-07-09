@@ -8,22 +8,27 @@
         required
         label="Телефон:"
         :has-custom-error="!!phoneError"
-        :error-message="phoneError"
+        :error-message="phoneError || errorMessage"
+        @update="errorMessage = ''"
       />
     </div>
-    <div class="field">
+    <div class="field password-block">
       <FormInput
         v-model="fields.password"
-        type="password"
+        :type="passwordType"
         placeholder="Пароль"
-        required
         label="Пароль:"
-        aria-description="* за замовчуванням Ваш номер телефону у форматі 380..."
+        hint="за замовчуванням Ваш номер телефону у форматі 380..."
+        :error-message="errorMessage"
+        @update="errorMessage = ''"
+        required
+        with-icon
+        @show-password="showPassword"
       />
     </div>
     <button
       type="submit"
-      :disabled="locked || !isValid"
+      :disabled="!isValid"
     >
       Увійти
     </button>
@@ -50,7 +55,10 @@ export default {
       password: ''
     },
     locked: false,
-    assetImage
+    isPasswordShown: false,
+    passwordType: 'password',
+    assetImage,
+    errorMessage: ''
   }),
 
   computed: {
@@ -72,49 +80,84 @@ export default {
   },
 
   methods: {
+    showPassword() {
+      this.isPasswordShown = !this.isPasswordShown
+      this.isPasswordShown ?
+        this.passwordType = 'text' :
+        this.passwordType = 'password'
+    },
     async handleSubmit() {
-      this.locked = true
-
       try {
-        const response = await this.$auth
-          .loginWith('local', {
-            headers: {
-              'Content-Type': 'application/x-www-form-urlencoded',
-              'Accept-Language': 'ru-RU,ru;q=0.8,en-US;q=0.5,en;q=0.3',
-              // 'Origin': 'http://95.217.38.198',
-              Accept: '*/*'
-            },
-            data: {
-              username: this.normalizedPhone,
-              password: this.fields.password,
-              grant_type: 'password'
-            },
-            transformRequest(data, headers) {
-              const queryParams = new URLSearchParams();
-              for (const key in data) {
-                if (data.hasOwnProperty(key)) {
-                  queryParams.append(key, data[key]);
-                }
-              }
-              return queryParams.toString();
-            }
-          })
-        const data = await response.data
-        if (data && data.access_token) {
-          console.log('Token before setting in localStorage:', data.access_token);
-          this.$auth.ctx.$axios.setHeader(this.$auth.options.token.name, data.access_token);
-          this.$auth.setToken('local', data.access_token)
-        } else {
-          console.error('Data object or access_token is not available');
+        await this.$auth.loginWith('local', {
+          data: {
+            username: this.normalizedPhone,
+            password: this.fields.password,
+            grant_type: 'password'
+          }
+        });
+
+        if (this.normalizedPhone === this.fields.password) {
+          await this.$store.dispatch('user/changeNeedToChangePassword', true)
         }
-        await this.$store.dispatch('user/fetchUser')
-        await this.$router.push(USER_ROUTES.USER_PROFILE.path)
+        if (this.$auth.loggedIn) {
+          await this.$router.push(USER_ROUTES.USER_PROFILE.path)
+        }
       } catch (e) {
-        // ...
-      } finally {
-        this.locked = false
+        const {error, error_description} = e.response.data
+        this.errorMessage = 'Невірний логін або пароль спробуйте ще раз'
+        console.log('ERROR', error_description)
       }
     }
   }
 }
 </script>
+<style lang="scss" scoped>
+::v-deep {
+  label {
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1.32;
+    padding-left: 14px;
+  }
+
+  .input {
+    display: block;
+    width: 100%;
+    margin-top: 4px;
+    height: 40px;
+    border: 1px solid #E2E6E9;
+    color: #010101;
+    padding: 0 14px;
+    font-size: 16px;
+    line-height: 1;
+    font-weight: 300;
+    border-radius: 8px;
+  }
+
+  .password-block {
+    .input-block {
+      display: flex;
+      align-items: center;
+    }
+
+    .eye-icon {
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      right: 10px;
+
+      &:hover {
+        cursor: pointer;
+      }
+    }
+
+    .form-control {
+      &.is-valid,
+      &.is-invalid {
+        background-position: right calc(1.375em + 0.1875rem) center;
+      }
+    }
+  }
+}
+
+</style>

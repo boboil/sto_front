@@ -1,48 +1,89 @@
-import moment from "moment";
+import moment from 'moment'
 import {formatDate} from '@/helpers'
 
 export const state = () => ({
+  orders: [],
   order: {},
   message: {},
   onlineJobs: [],
   jobs: [],
   cancelJobs: [],
   talons: [],
-  allTalons: []
+  allTalons: [],
+  singleJob: {}
 });
 
 export const getters = {
-  getAvailableTimes(state, getters) {
+  getAvailableTimes(state) {
     return state.availableTimes
+  },
+  getJobs(state) {
+    return state.jobs
+  },
+  getOrders(state) {
+    return state.orders
+  },
+  getSingleJob(state) {
+    return state.singleJob
   },
   getOnlineJobs(state, getters) {
     return getters.convertDataForOnlineJobs(state.jobs)
+  },
+  convertDataForOnlineJobs: () => (jobs) => {
+    const onlineJobs = {}
+    jobs.forEach((prWork) => {
+      if (prWork.StatusCode !== 'A') {
+        const works = prWork.Works.map((item) => ({
+          ...item,
+          Date: moment(prWork.Date).format('DD/MM/YYYY'),
+        }))
+
+        const products = prWork.Products.filter((item) => item.Group !== 'НЕ_відображати_в_кабінеті')
+          .map((item) => ({
+            ...item,
+            Date: moment(prWork.Date).format('DD/MM/YYYY'),
+          }))
+
+        onlineJobs[prWork.ID] = {
+          works,
+          products,
+          date: moment(prWork.Date).format('DD/MM/YYYY'),
+          year: moment(prWork.Date).format('YYYY'),
+          CarOdometer: prWork.CarOdometer,
+          CarName: prWork.CarName,
+          orderId: prWork.ID,
+          actId: prWork.No,
+          No: prWork.No.replace(/[a-z]/gi, ''),
+          RecType: prWork.RecType,
+          status: prWork.StatusCode,
+          delivery: prWork.Delivery
+        }
+      }
+    })
+    return onlineJobs
   },
   getCancelJobs(state, getters) {
     return getters.convertDataForCancelJobs(state.jobs)
   },
   convertDataForCancelJobs: () => (prWorks) => {
     const cancelJobs = {};
-
-    prWorks.forEach(prWork => {
-      // todo Delivery change to CheckUP
-      if (prWork.Delivery === 'CheckUP') {
-        const works = prWork.Works.map(item => ({
+    prWorks.forEach((prWork) => {
+      if (prWork.Delivery === 'Відмовлено_клієнтом' && prWork.StatusCode === 'A') {
+        const works = prWork.Works.map((item) => ({
           ...item,
-          Date: formatDate(prWork.Date),
-        }));
+          Date: moment(prWork.Date).format('DD/MM/YYYY'),
+        }))
 
-        const products = prWork.Products
-          .filter(item => item.Group !== 'НЕ_відображати_в_кабінеті')
-          .map(item => ({
+        const products = prWork.Products.filter((item) => item.Group !== 'НЕ_відображати_в_кабінеті')
+          .map((item) => ({
             ...item,
-            Date: formatDate(prWork.Date),
-          }));
+            Date: moment(prWork.Date).format('DD/MM/YYYY'),
+          }))
 
         cancelJobs[prWork.ID] = {
           works,
           products,
-          date: moment(prWork.Date).format('DD-MM-YYYY'),
+          date: moment(prWork.Date).format('DD/MM/YYYY'),
           year: moment(prWork.Date).format('YYYY'),
           CarOdometer: prWork.CarOdometer,
           CarName: prWork.CarName,
@@ -51,64 +92,12 @@ export const getters = {
           No: prWork.No.replace(/[a-z]/gi, ''),
           RecType: prWork.RecType,
           status: prWork.StatusCode,
-          delivery: 'Відмовлено клієнтом'
-        };
+          delivery: prWork.Delivery
+        }
       }
-    });
+    })
 
-    return cancelJobs;
-  },
-  convertDataForOnlineJobs: () => (prWorks) => {
-    const jobs = {};
-
-    prWorks.forEach(prWork => {
-      const works = prWork.Works.map(item => ({
-        ...item,
-        Date: formatDate(prWork.Date),
-      }));
-
-      const products = prWork.Products
-        .filter(item => item.Group !== 'НЕ_відображати_в_кабінеті')
-        .map(item => ({
-          ...item,
-          Date: formatDate(prWork.Date),
-        }));
-
-      if (prWork.StatusCode !== 'A') {
-        const deliveryMapping = {
-          'Все_замовити': 'Вже погоджено клієнтом',
-          'Додано_в_видаткову': 'Вже погоджено клієнтом',
-          'На_погодженні': 'Натисніть для підтвердження замовлення',
-          'ОПРАЦЬОВАНО_СКЛАДОМ': 'Опрацьовуємо, трішки зачекайте',
-          'Очікуємо_на_склад': 'Вже погоджено клієнтом',
-          'Процінити': 'Опрацьовуємо, трішки зачекайте',
-          'Частково_замовити': 'Вже погоджено клієнтом',
-          'Опрацьовано_складом': 'Опрацьовуємо, трішки зачекайте',
-          '': 'Опрацьовуємо, трішки зачекайте',
-        };
-
-        const delivery = deliveryMapping[prWork.Delivery] || 'Опрацьовуємо, трішки зачекайте';
-        const color = prWork.Delivery === 'На_погодженні' ? 'green' : undefined;
-
-        jobs[prWork.ID] = {
-          works,
-          products,
-          date: moment(prWork.Date).format('DD-MM-YYYY'),
-          year: moment(prWork.Date).format('YYYY'),
-          CarOdometer: prWork.CarOdometer,
-          CarName: prWork.CarName,
-          orderId: prWork.ID,
-          actId: prWork.No,
-          No: prWork.No.replace(/[a-z]/gi, ''),
-          RecType: prWork.RecType,
-          status: prWork.StatusCode,
-          delivery,
-          color,
-        };
-      }
-    });
-
-    return jobs;
+    return cancelJobs
   },
   getTalons(state, getters) {
     return getters.processTickets(state.talons)
@@ -144,22 +133,22 @@ export const getters = {
 
     executedWorks.forEach((work) => {
       allTickets.forEach((ticket) => {
-        const pos = work.Description.includes(ticket.Code);
+        const pos = work.Description ? work.Description.includes(ticket.Code) : false
 
         if (pos) {
           ticket.usage = true;
-          ticket.DateUsage = moment(work.Date).format("DD-MM-YYYY");
+          ticket.DateUsage = moment(work.Date).format("DD/MM/YYYY");
           ticket.usedCount += work.Quantity;
           ticket.unusedCount -= work.Quantity;
         }
       });
     });
 
-    return allTickets;
+    return allTickets
   },
-  getAllTalons({ allTalons }) {
+  getAllTalons({allTalons}) {
     return allTalons
-  },
+  }
 }
 export const mutations = {
   setAvailableTimes(state, times) {
@@ -179,50 +168,71 @@ export const mutations = {
   },
   setAllTalons(state, talons) {
     state.allTalons = talons;
+  },
+  setSingleJob(state, singleJob) {
+    state.singleJob = singleJob;
+  },
+  setOrders(state, orders) {
+    state.orders = orders;
   }
 };
 
 export const actions = {
-  async createDiagnosticOrder({commit, dispatch}, params = {}) {
+  async createDiagnosticOrder({commit, dispatch}, data = {}) {
     try {
-      await this.$axios.post('/csws/cs/order', JSON.stringify(params))
-
+      await this.$axios.post('https://api.sto.sumy.ua/api/add-diagnostic-order', data)
     } catch (e) {
 
     }
   },
-  async prepareDataForOnline({commit, rootState}) {
-    const orders = rootState.user.historyList
-    const data = [];
+  async prepareDataForOnline({commit}) {
     try {
-      for (const order of orders) {
-        const no = order.No.replace(/\d/g, '');
+      const response = await this.$axios.get(`/csws/cs/history/order`)
+      const orders = response.data
+      const dataPromises = orders.map(async (order) => {
+        const no = order.No.replace(/\d/g, '')
         if (no === 'Z') {
-          const orderUrl = `/csws/cs/history/${order.ID}/${order.RecType}`;
-          const workResponse = await this.$axios.get(orderUrl);
-          const work = workResponse.data;
-          data.push(work);
+          const response = await this.$axios.get(`/csws/cs/history/${order.ID}/${order.RecType}`)
+          return response.data
         }
-      }
-      commit('setJobs', data);
+        return null
+      })
+      const data = await Promise.all(dataPromises);
+      const filteredData = data.filter((item) => item !== null)
+      commit('setJobs', filteredData);
+    } catch (error) {
+      console.error(error);
+    }
+  },
+  async fetchOrderHistory({commit}) {
+    try {
+      const response = await this.$axios.get(`/csws/cs/history/workorder`)
+      const data = response.data
+      commit('setOrders', data)
+    } catch (error) {
+      console.error(error);
+    }
+  },
+  async fetchDataOneJob({commit}, {id, recType}) {
+    try {
+      const orderUrl = `/csws/cs/history/${id}/${recType}`;
+      const response = await this.$axios.get(orderUrl);
+      const data = response.data;
+      commit('setSingleJob', data);
     } catch (error) {
       console.error(error);
     }
   },
   async fetchDataForTalons({commit, rootState}) {
-    const orders = rootState.user.historyList
-    const data = [];
+    const response = await this.$axios.get('/csws/cs/history/workorder')
+    const orders = await response.data
     try {
-      for (const order of orders) {
-        const no = order.No.replace(/\d/g, '');
-        if (no === 'W') {
-          const orderUrl = `/csws/cs/history/${order.ID}/${order.RecType}`;
-          const workResponse = await this.$axios.get(orderUrl);
-          const work = workResponse.data;
-          data.push(work);
-        }
-      }
-      commit('setTalons', data);
+      const dataPromises = orders.map(async (order) => {
+        const response = await this.$axios.get(`/csws/cs/history/${order.ID}/${order.RecType}`)
+        return response.data
+      })
+      const data = await Promise.all(dataPromises);
+      commit('setTalons', data)
     } catch (error) {
       console.error(error);
     }
@@ -231,7 +241,29 @@ export const actions = {
     const workResponse = await this.$axios.get('/csws/cs/workgroup/63');
     const talons = workResponse.data;
     commit('setAllTalons', talons);
-  }
+  },
+  async createPrepay({commit, dispatch}, params = {}) {
+    try {
+      const response = await this.$axios.post(
+        'https://api.sto.sumy.ua/api/pre-pay', params
+      )
+      const data = response.data
+      window.location.href = data.url;
+    } catch (e) {
+
+    }
+  },
+  async createOrder({commit, dispatch}, params = {}) {
+    try {
+      const response = await this.$axios.post(
+        'https://api.sto.sumy.ua/api/create-order', params
+      )
+      const data = response.data
+      window.location.href = data.url;
+    } catch (e) {
+
+    }
+  },
 }
 
 export default {

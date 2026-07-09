@@ -1,7 +1,10 @@
 export default {
+  // serverMiddleware: [
+  //   { path: '/liqpay/success', handler: '~/middleware/payment.js' },
+  // ],
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
-    title: 'gold_avto',
+    title: 'Gold Auto',
     htmlAttrs: {
       lang: 'en'
     },
@@ -27,7 +30,10 @@ export default {
   plugins: [
     { src: '~/plugins/vuex-cache.js', mode: 'client' },
     { src: '~/plugins/axios.js', mode: 'client' },
-    { src: '~/plugins/moment.js', mode: 'client' }
+    { src: '~/plugins/moment.js', mode: 'client' },
+    { src: '~plugins/v-mask.js', mode: 'client' },
+    '~/plugins/auth-interceptor.js',
+    '~/plugins/vue-swal.js'
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -42,15 +48,17 @@ export default {
   env: {
     grantType: 'password',
     grantTypeRefreshToken: 'refresh_token',
-    appHost: process.env.CLIENT_URI,
-    apiHost: process.env.API_ENDPOINT
+    appHost: process.env.CLIENT_URI_PROD,
+    apiHost: process.env.API_ENDPOINT,
+    telegramUrl: process.env.TELEGRAM_URL,
+    auth_endpoint: process.env.AUTH_ENDPOINT
   },
   /*
    ** Customize the progress-bar color
    */
   loading: {
     color: '#ffe400',
-    height: '2px'
+    height: '5px'
   },
   /*
    ** Auth settings
@@ -58,51 +66,55 @@ export default {
   auth: {
     strategies: {
       local: {
-        scheme: '@/schemes/localScheme',
-        endpoints: {
-          login: {
-            url: process.env.AUTH_ENDPOINT,
-            method: 'post',
-            propertyName: 'access_token',
-          },
-          logout: false,
-          user: { url: '/csws/cs/user', method: 'get', property: false },
-          autoFetchUser: false
-        },
-        tokenRequired: true,
+        scheme: 'local',
         token: {
           property: 'access_token',
-          type: 'Bearer',
-          name: 'Authorization',
-          storage: 'localStorage',
-          maxAge: 1800,
+          global: true,
+          type: 'Bearer'
         },
-      },
+        user: {
+          property: false,
+        },
+        endpoints: {
+          login: { url: '/csws/authorize', method: 'post' },
+          logout: false,
+          user: { url: '/csws/cs/user', method: 'get' }
+        }
+      }
     },
-    redirect: {
-      logout: '/',
-      user: '/user/profile',
-      callback: '/'
-    },
-    autoFetchUser: false,
-    localStorage: true,
-    watchLoggedIn: false
+    localStorage: {
+      prefix: 'gold_avto.'
+    }
   },
   // Modules: https://go.nuxtjs.dev/config-modules
   modules: [
     // https://go.nuxtjs.dev/bootstrap
     'bootstrap-vue/nuxt',
     '@nuxtjs/axios',
-    '@nuxtjs/auth',
+    '@nuxtjs/auth-next',
     '@nuxtjs/proxy'
   ],
+  bootstrapVue: {
+    icons: true
+  },
+  axios: {
+    baseURL: 'https://dev.sto.sumy.ua',
+    proxy: true
+  },
   proxy: {
     '/csws': {
       target: process.env.API_ENDPOINT,
       changeOrigin: true
     },
+    // '/api': {
+    //   target: 'https://api.sto.sumy.ua/api',
+    //   changeOrigin: true,
+    //   pathRewrite: { '^/api': '/' },
+    //   headers: {
+    //     'Access-Control-Allow-Origin': '*'
+    //   }
+    // },
   },
-
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
     extend(config, ctx) {
@@ -117,6 +129,6 @@ export default {
     ]
   },
   server: {
-    host: '0.0.0.0' // default: localhost
+    host: '0.0.0.0'
   }
 }

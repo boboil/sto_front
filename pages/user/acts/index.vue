@@ -8,13 +8,9 @@
             Акти виконаних робіт
           </h1>
           <div class="block-head-controls">
-            <!-- <form class="search">
-                <input type="text" placeholder="Поиск...">
-                <button type="submit"></button>
-            </form> -->
             <div class="type-selector">
               <select id="select_car" @change="filteredCars" v-model="selectedCar">
-                <option value="0">Усі машини</option>
+                <option value="0">Усі авто</option>
                 <option :value="car.ID" v-for="car in cars">
                   {{ car.RegistrationNo }} &#x20;&#x20; {{ car.Brand }} {{ car.Model }}
                 </option>
@@ -34,8 +30,8 @@
                       :to="`${USER_ROUTES.USER_ACTS.path}/${act.ID}`"
                       :key="index"
                     >
-                      <div class="subtitle status" v-if="act.StatusCode === 'Попередній'">
-                        <b>Попередній</b>
+                      <div class="subtitle status" v-if="act.StatusCode === 'A'">
+                        <b class="red">Попередній</b>
                       </div>
                       <div class="value"></div>
                       <div class="subtitle">
@@ -60,7 +56,7 @@
                         Авто:
                       </div>
                       <div class="value">
-                        {{ act.CarName }}
+                        {{ act.CarName || 'Інше авто' }}
                       </div>
                     </NuxtLink>
                   </div>
@@ -84,9 +80,10 @@ import {USER_ROUTES} from "~/constants"
 import {convertDateToFormat, reversedKeys} from '@/helpers'
 
 export default {
-  name: "Talons",
+  name: "Acts",
   components: {Header},
-  async fetch({store, params, route, $auth}) {
+  async fetch({store}) {
+    await store.dispatch('user/fetchActs')
     await store.dispatch('user/fetchCars')
   },
   data() {
@@ -127,7 +124,10 @@ export default {
       }
       const car = this.cars.find(car => car.ID === this.selectedCar)
       this.filteredList = this.actsList.filter(act => {
-        return act.CarName.includes(car.RegistrationNo);
+        if (car.RegistrationNo === null) {
+          return false
+        }
+        return act.CarName && act.CarName.includes(car.RegistrationNo)
       })
     }
   },
