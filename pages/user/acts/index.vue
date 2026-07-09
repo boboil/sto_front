@@ -68,7 +68,7 @@
               </div>
             </div>
           </div>
-          <button type="button" class="btn btn-info mt-4" onclick="$router.push('/talons')">
+          <button type="button" class="btn btn-info mt-4" onclick="$router.push('/user/talons')">
             Хочете знижки на популярні послуги, тисніть!
           </button>
         </div>

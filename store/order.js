@@ -25,7 +25,8 @@ export const getters = {
     const cancelJobs = {};
 
     prWorks.forEach(prWork => {
-      if (prWork.Delivery === 'Відмовлено_клієнтом' && prWork.StatusCode === 'A') {
+      // todo Delivery change to CheckUP
+      if (prWork.Delivery === 'CheckUP') {
         const works = prWork.Works.map(item => ({
           ...item,
           Date: formatDate(prWork.Date),
