@@ -68,6 +68,9 @@ export default {
     // redirect to home ('/') collides with the '/' -> sign-in middleware on
     // the static build and breaks the first login click
     redirect: false,
+    // registered here (not in the top-level plugins array) so it runs after
+    // the auth module plugin and $auth is available
+    plugins: [{ src: '~/plugins/link-auth.js', mode: 'client' }],
     strategies: {
       local: {
         scheme: 'local',

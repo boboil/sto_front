@@ -38,6 +38,16 @@ export const signOut = () => {
   window.location.href = AUTH_ROUTES.SIGN_OUT
 }
 
+// accepts 0XXXXXXXXX, 80XXXXXXXXX, 380XXXXXXXXX (with any separators),
+// returns the 380XXXXXXXXX form or '' if not a valid UA phone
+export const normalizeUaPhone = (raw = '') => {
+  const digits = String(raw).replace(/\D/g, '')
+  if (/^0\d{9}$/.test(digits)) return `38${digits}`
+  if (/^80\d{9}$/.test(digits)) return `3${digits}`
+  if (/^380\d{9}$/.test(digits)) return digits
+  return ''
+}
+
 export const assetIcon = (src, ext = 'svg') => {
   try {
     return require(`@/assets/icons/${src}.${ext}?raw`)

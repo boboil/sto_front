@@ -37,7 +37,7 @@
 
 <script>
 import * as helper from '@/helpers'
-import {assetImage} from '@/helpers'
+import {assetImage, normalizeUaPhone} from '@/helpers'
 import {AUTH_ROUTES, USER_ROUTES} from '@/constants'
 import FormInput from '@/components/Common/Form/Input'
 
@@ -63,11 +63,7 @@ export default {
 
   computed: {
     normalizedPhone() {
-      const digits = this.fields.username.replace(/\D/g, '')
-      if (/^0\d{9}$/.test(digits)) return `38${digits}`
-      if (/^80\d{9}$/.test(digits)) return `3${digits}`
-      if (/^380\d{9}$/.test(digits)) return digits
-      return ''
+      return normalizeUaPhone(this.fields.username)
     },
     phoneError() {
       if (!this.fields.username || this.normalizedPhone) return ''
