@@ -64,6 +64,10 @@ export default {
    ** Auth settings
    */
   auth: {
+    // the app navigates manually after login/logout; the module's automatic
+    // redirect to home ('/') collides with the '/' -> sign-in middleware on
+    // the static build and breaks the first login click
+    redirect: false,
     strategies: {
       local: {
         scheme: 'local',

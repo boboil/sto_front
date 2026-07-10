@@ -103,9 +103,8 @@ export default {
           await this.$router.push(USER_ROUTES.USER_PROFILE.path)
         }
       } catch (e) {
-        const {error, error_description} = e.response.data
         this.errorMessage = 'Невірний логін або пароль спробуйте ще раз'
-        console.log('ERROR', error_description)
+        console.log('ERROR', e?.response?.data?.error_description || e)
       }
     }
   }
