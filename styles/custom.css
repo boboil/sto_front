@@ -2,6 +2,20 @@
     --yellow: #ffe400;
 }
 
+/* Bootstrap 5's .btn-check (hides the raw checkbox/radio behind a label
+   styled as a button) isn't part of Bootstrap 4, which this project uses. */
+.btn-check {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
 .preloader {
     display: none;
     /*фиксированное позиционирование*/

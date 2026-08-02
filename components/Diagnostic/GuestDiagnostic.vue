@@ -52,7 +52,6 @@
         <input type="hidden" name="name" id="diagnosticName" :value="diagnosticName" />
       </div>
       <div class="mt-2">
-        <label for="diagnosticDate">Або оберіть дату (на тиждень вперед)</label>
         <b-form-datepicker
           id="diagnosticDate"
           :min="minDate"

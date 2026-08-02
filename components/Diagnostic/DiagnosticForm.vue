@@ -81,7 +81,6 @@
         <input type="hidden" name="name" id="diagnosticName" :value="diagnosticName"/>
       </div>
       <div v-if="fields.reason === 'camberToe'" class="mt-2">
-        <label for="diagnosticDate">Або оберіть дату (на тиждень вперед)</label>
         <b-form-datepicker
           id="diagnosticDate"
           :min="minDate"
