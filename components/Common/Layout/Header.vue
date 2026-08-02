@@ -53,13 +53,6 @@
             Записатись
           </button>
           <NuxtLink
-            :to="USER_ROUTES.USER_TALONS.path"
-            type="button"
-            class="nav-btn auth-button"
-          >
-            Мій гаманець послуг
-          </NuxtLink>
-          <NuxtLink
             :to="USER_ROUTES.USER_ONLINE_JOBS.path"
             type="button"
             class="nav-btn auth-button"
@@ -97,9 +90,6 @@
           <button class="m-3" @click="logout">
             <b>Вийти</b>
           </button>
-          <a href="https://forms.gle/A5oMq9Hjt8AKcW7n6" class="btn btn-info mt-3">
-            Залишити відгук
-          </a>
         </nav>
       </div>
       <ModalPopup :is-open.sync="prepayModalShow" title="Сума авансу">

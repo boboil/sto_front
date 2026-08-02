@@ -15,13 +15,6 @@
             <b>Записатись</b>
           </button>
           <NuxtLink
-            :to="USER_ROUTES.USER_TALONS.path"
-            type="button"
-            class="nav-btn auth-button"
-          >
-            Мій гаманець послуг
-          </NuxtLink>
-          <NuxtLink
             :to="USER_ROUTES.USER_ONLINE_JOBS.path"
             type="button"
             class="nav-btn auth-button"
@@ -50,9 +43,6 @@
             Акти виконаних робіт
           </NuxtLink>
           <FooterContact />
-          <div class="phone-main">
-            <a href="https://forms.gle/A5oMq9Hjt8AKcW7n6" class="btn btn-info" target="_blank">Залишити відгук</a>
-          </div>
         </div>
       </section>
       <ModalPopup :is-open.sync="diagnosticModalShow" title="Онлайн запис!">

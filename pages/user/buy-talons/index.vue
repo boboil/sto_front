@@ -63,6 +63,9 @@ export default {
     Cart,
     Header
   },
+  middleware({ redirect }) {
+    return redirect('/user')
+  },
   async fetch({store, params, route, $auth}) {
     await Promise.all([
       store.dispatch('order/fetchAllTalons')

@@ -107,6 +107,9 @@ export default {
     BIconPlusLg,
     Header
   },
+  middleware({ redirect }) {
+    return redirect('/user')
+  },
   async fetch({ store }) {
     await Promise.all([
       store.dispatch('order/fetchDataForTalons'),
