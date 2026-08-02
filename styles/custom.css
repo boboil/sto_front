@@ -578,8 +578,9 @@ main#all_works {
     display: flex;
     flex-direction: row;
     align-content: center;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
+    gap: 10px;
 }
 
 /* 20.11.22 RS */

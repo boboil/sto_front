@@ -80,6 +80,19 @@
         />
         <input type="hidden" name="name" id="diagnosticName" :value="diagnosticName"/>
       </div>
+      <div v-if="fields.reason === 'camberToe'" class="mt-2">
+        <label for="diagnosticDate">Або оберіть дату (на тиждень вперед)</label>
+        <b-form-datepicker
+          id="diagnosticDate"
+          :min="minDate"
+          :max="maxDate"
+          :date-disabled-fn="dateDisabled"
+          placeholder="Оберіть дату"
+          locale="uk"
+          start-weekday="1"
+          @input="onCalendarDateChange"
+        />
+      </div>
     </div>
     <div
       v-if="fields.reason === 'diagnostic'"
@@ -173,6 +186,14 @@ export default {
         return []
       }
       return this.time
+    },
+    minDate() {
+      return new Date()
+    },
+    maxDate() {
+      const date = new Date()
+      date.setDate(date.getDate() + 7)
+      return date
     }
   },
   methods: {
@@ -183,6 +204,16 @@ export default {
     selectCar(event) {
       const selectedIndex = event.target.selectedIndex
       this.selectedCar = event.target.options[selectedIndex].text
+    },
+    dateDisabled(ymd, date) {
+      return date.getDay() === 0
+    },
+    async onCalendarDateChange(date) {
+      if (!date) {
+        return
+      }
+      this.fields.diagnosticDay = date
+      await this.syncTime()
     },
     async syncTime() {
       if (this.fields.reason === 'camberToe') {
